@@ -937,6 +937,18 @@
             .scroll-indicator {
                 display: none;
             }
+
+            /* 모바일 상단 로고 크기 줄이기 */
+            .logo {
+                height: 20px !important;
+                max-height: 20px !important;
+            }
+
+            /* 모바일 히어로 로고 크기 키우기 */
+            .hero-logo {
+                max-width: 85%;
+                width: 85%;
+            }
         }
 
         /* Scroll animations */
@@ -1038,28 +1050,94 @@
             },
             {
                 id: 3,
-                title: "PORTANA PIZZA",
-                category: "cafe",
-                categoryName: "PIZZA",
-                thumbnail: "images/cafe_restaurant/portana1.png",
+                title: "CORPORATE OFFICE",
+                category: "office",
+                categoryName: "OFFICE",
+                thumbnail: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=800&fit=crop",
                 images: [
-                    { src: "images/cafe_restaurant/portana1.png", caption: "" },
-                    { src: "images/cafe_restaurant/portana2.png", caption: "" },
-                    { src: "images/cafe_restaurant/portana3.png", caption: "" }
+                    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1600&fit=crop"
                 ]
             },
             {
                 id: 4,
-                title: "PHYSIO FITNESS",
+                title: "BOUTIQUE STORE",
                 category: "commercial",
-                categoryName: "FITNESS",
-                thumbnail: "images/commercial/fitness1.png",
+                categoryName: "COMMERCIAL",
+                thumbnail: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=900&fit=crop",
                 images: [
-                    { src: "images/commercial/fitness1.png", caption: "Exterior" },
-                    { src: "images/commercial/fitness2.png", caption: "Main Hall" },
-                    { src: "images/commercial/fitness3.png", caption: "Entrance" },
-                    { src: "images/commercial/fitness4.png", caption: "Pilates" },
-                    { src: "images/commercial/fitness5.png", caption: "Locker Room" }
+                    "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=1600&fit=crop"
+                ]
+            },
+            {
+                id: 5,
+                title: "CONTEMPORARY CAFE",
+                category: "cafe",
+                categoryName: "CAFE & RESTAURANT",
+                thumbnail: "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800&h=600&fit=crop",
+                images: [
+                    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1559925393-8be0ec4767c8?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1600&fit=crop"
+                ]
+            },
+            {
+                id: 6,
+                title: "FINE DINING RESTAURANT",
+                category: "cafe",
+                categoryName: "CAFE & RESTAURANT",
+                thumbnail: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&h=800&fit=crop",
+                images: [
+                    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=1600&fit=crop"
+                ]
+            },
+            {
+                id: 7,
+                title: "MODERN VILLA",
+                category: "residential",
+                categoryName: "RESIDENTIAL",
+                thumbnail: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&h=800&fit=crop",
+                images: [
+                    "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1600585152915-d208bec867a1?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=1600&fit=crop"
+                ]
+            },
+            {
+                id: 8,
+                title: "STARTUP WORKSPACE",
+                category: "office",
+                categoryName: "OFFICE",
+                thumbnail: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=900&fit=crop",
+                images: [
+                    "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1600&fit=crop"
+                ]
+            },
+            {
+                id: 9,
+                title: "URBAN TOWER",
+                category: "exterior",
+                categoryName: "EXTERIOR",
+                thumbnail: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&h=800&fit=crop",
+                images: [
+                    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1583470790878-4ecfde8adc42?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600&fit=crop"
+                ]
+            },
+            {
+                id: 10,
+                title: "RESIDENTIAL COMPLEX",
+                category: "exterior",
+                categoryName: "EXTERIOR",
+                thumbnail: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
+                images: [
+                    "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600&fit=crop",
+                    "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=1600&fit=crop"
                 ]
             }
         ];
@@ -1410,20 +1488,51 @@
             const [selectedProject, setSelectedProject] = useState(null);
             const [filter, setFilter] = useState('all');
 
+            // 브라우저 뒤로가기/앞으로가기 지원
+            useEffect(() => {
+                const handlePopState = (event) => {
+                    if (event.state) {
+                        setCurrentPage(event.state.page || 'home');
+                        setSelectedProject(event.state.project || null);
+                        setFilter(event.state.filter || 'all');
+                    } else {
+                        setCurrentPage('home');
+                    }
+                };
+
+                window.addEventListener('popstate', handlePopState);
+                
+                // 초기 상태 저장
+                if (!window.history.state) {
+                    window.history.replaceState({ page: 'home', project: null, filter: 'all' }, '', window.location.pathname);
+                }
+
+                return () => window.removeEventListener('popstate', handlePopState);
+            }, []);
+
+            // 페이지 변경 시 히스토리에 추가
+            const navigateTo = (page, project = null, newFilter = filter) => {
+                setCurrentPage(page);
+                setSelectedProject(project);
+                if (newFilter !== filter) setFilter(newFilter);
+                window.history.pushState({ page, project, filter: newFilter }, '', window.location.pathname);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
             let content;
             if (currentPage === 'home') {
-                content = <Home setCurrentPage={setCurrentPage} setSelectedProject={setSelectedProject} />;
+                content = <Home setCurrentPage={navigateTo} setSelectedProject={setSelectedProject} />;
             } else if (currentPage === 'projects') {
-                content = <Projects setCurrentPage={setCurrentPage} setSelectedProject={setSelectedProject} filter={filter} setFilter={setFilter} />;
+                content = <Projects setCurrentPage={navigateTo} setSelectedProject={setSelectedProject} filter={filter} setFilter={setFilter} />;
             } else if (currentPage === 'projectDetail') {
-                content = <ProjectDetail selectedProject={selectedProject} setCurrentPage={setCurrentPage} />;
+                content = <ProjectDetail selectedProject={selectedProject} setCurrentPage={navigateTo} />;
             } else if (currentPage === 'about') {
                 content = <About />;
             }
 
             return (
                 <>
-                    <Navigation currentPage={currentPage} setCurrentPage={setCurrentPage} setFilter={setFilter} />
+                    <Navigation currentPage={currentPage} setCurrentPage={navigateTo} setFilter={setFilter} />
                     <main>
                         {content}
                     </main>
