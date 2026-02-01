@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- ============================================================
+         🔧 [수정 포인트 1] 웹사이트 탭 제목
+         브라우저 탭에 표시되는 이름입니다.
+         ============================================================ -->
+    <title>SOHA DESIGN</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ============================================================
+           🎨 [수정 포인트 2] 브랜드 컬러
+           전체 웹사이트의 색상을 여기서 변경할 수 있습니다.
+           
+           --deep-navy: 메인 어두운 색 (텍스트, 푸터 배경)
+           --warm-gold: 포인트 색 (호버, 강조)
+           --soft-sage: 부제목, 보조 색상
+           --white: 배경 색 (미색)
+           --pure-white: 순수 흰색
+           ============================================================ */
+        :root {
+            /* 기존 SOHA DESIGN 브랜드 컬러 */
+            --deep-navy: #1A2332;
+            --warm-gold: #C9A961;
+            --soft-sage: #8FA998;
+            --white: #FAFAFA;
+            --pure-white: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--white);
+            color: var(--deep-navy);
+            overflow-x: hidden;
+        }
+
+        /* 세리프 폰트 클래스 */
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        nav.scrolled {
+            background: rgba(250, 250, 250, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 1px 0 rgba(26, 35, 50, 0.05);
+        }
+
+        .logo {          ← 상단 로고 이미지 크기 수정
+            height: 20px !important;
+            max-height: 20px !important;
+            width: auto !important;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            user-select: none;
+        }
+
+        .logo:hover {
+            opacity: 0.6;
+            transform: scale(0.98);
+        }
+
+        .logo-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            color: var(--deep-navy);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.4s ease;
+        }
+
+        .logo-text:hover {
+            color: var(--warm-gold);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3.5rem;
+            list-style: none;
+        }
+
+        .nav-links li {
+            position: relative;
+        }
+
+        .nav-links a {
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--deep-navy);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.4s ease;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--warm-gold);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-links a:hover {
+            color: var(--warm-gold);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: -1.5rem;
+            padding-top: 1.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-links li:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content {
+            background: var(--pure-white);
+            padding: 1.8rem 2rem;
+            min-width: 220px;
+            box-shadow: 0 20px 60px rgba(26, 35, 50, 0.12);
+            border-left: 2px solid var(--warm-gold);
+        }
+
+        .dropdown-item {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--deep-navy);
+            padding: 0.9rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(26, 35, 50, 0.06);
+            position: relative;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 50%;
+            width: 0;
+            height: 1px;
+            background: var(--warm-gold);
+            transition: width 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            color: var(--warm-gold);
+            padding-left: 1rem;
+        }
+
+        .dropdown-item:hover::before {
+            width: 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 0 3rem;
+            background: var(--white);
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 1000px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-logo {          ← 메인 로고 이미지 크기 수정
+            max-width: 700px;
+            width: 60%;
+            height: auto;
+            margin: 0 auto 2rem;
+            display: block;
+        }
+
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(4.5rem, 14vw, 12rem);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            line-height: 0.9;
+            margin-bottom: 2rem;
+            color: var(--deep-navy);
+            animation: fadeUp 1s ease forwards;
+        }
+
+        .hero h1 span {
+            display: block;
+            font-weight: 500;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+            font-weight: 300;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--warm-gold);
+            margin-bottom: 4rem;
+            animation: fadeUp 1s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .hero-description {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+            font-weight: 300;
+            line-height: 1.8;
+            max-width: 550px;
+            margin: 0 auto;
+            color: var(--deep-navy);
+            opacity: 0;
+            animation: fadeUp 1s ease 0.4s forwards;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 0.9;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+            animation: fadeUp 1s ease 0.8s forwards;
+            opacity: 0;
+        }
+
+        .scroll-indicator span {
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--soft-sage);
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--warm-gold), transparent);
+            animation: scrollPulse 2s ease infinite;
+        }
+
+        @keyframes scrollPulse {
+            0%, 100% { opacity: 0.3; transform: scaleY(1); }
+            50% { opacity: 1; transform: scaleY(1.2); }
+        }
+
+        /* Main Content Area */
+        .content-wrapper {
+            padding: 0 3rem 8rem;
+            max-width: 1800px;
+            margin: 0 auto;
+            background: transparent;
+        }
+
+        /* Projects Masonry Layout */
+        .projects-section {
+            margin-top: 8rem;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3.5rem, 10vw, 8rem);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            margin-bottom: 1rem;
+            color: var(--deep-navy);
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-subtitle {
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--soft-sage);
+            margin-bottom: 4rem;
+            display: block;
+        }
+
+        .filter-container {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 5rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(26, 35, 50, 0.08);
+            padding-bottom: 2rem;
+        }
+
+        .filter-btn {
+            background: none;
+            border: none;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--deep-navy);
+            cursor: pointer;
+            padding: 0.5rem 0;
+            position: relative;
+            opacity: 0.35;
+            transition: all 0.4s ease;
+        }
+
+        .filter-btn.active {
+            opacity: 1;
+            color: var(--warm-gold);
+        }
+
+        .filter-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--warm-gold);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .filter-btn:hover {
+            opacity: 0.8;
+        }
+
+        .filter-btn.active::after {
+            width: 100%;
+        }
+
+        /* Masonry Grid */
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 2.5rem;
+            margin-bottom: 8rem;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 2rem;
+        }
+
+        @media (max-width: 1400px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .masonry-grid {
+                column-count: 1;
+            }
+        }
+
+        .project-item {
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 2.5rem;
+            break-inside: avoid;
+            display: block;
+        }
+
+        .project-item.tall {
+            aspect-ratio: 3/4;
+        }
+
+        .project-item.wide {
+            aspect-ratio: 4/3;
+        }
+
+        .project-item.square {
+            aspect-ratio: 1/1;
+        }
+
+        .project-item.portrait {
+            aspect-ratio: 2/3;
+        }
+
+        .project-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(26, 35, 50, 0.15);
+        }
+
+        .project-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: grayscale(15%) contrast(1.05);
+        }
+
+        .project-item:hover img {
+            transform: scale(1.08);
+            filter: grayscale(0%) contrast(1);
+        }
+
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, 
+                rgba(26, 35, 50, 0.95) 0%, 
+                rgba(26, 35, 50, 0.3) 40%,
+                transparent 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2.5rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .project-item:hover .project-overlay {
+            opacity: 1;
+        }
+
+        .project-category {
+            font-size: 0.6rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--warm-gold);
+            margin-bottom: 0.8rem;
+            font-weight: 400;
+            transform: translateY(10px);
+            transition: transform 0.5s ease 0.1s;
+        }
+
+        .project-item:hover .project-category {
+            transform: translateY(0);
+        }
+
+        .project-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 400;
+            color: var(--pure-white);
+            letter-spacing: 0.02em;
+            transform: translateY(10px);
+            transition: transform 0.5s ease;
+        }
+
+        .project-item:hover .project-name {
+            transform: translateY(0);
+        }
+
+        /* Project Detail Page */
+        .project-detail-page {
+            padding: 10rem 3rem 8rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--deep-navy);
+            margin-bottom: 5rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: all 0.4s ease;
+        }
+
+        .back-btn::before {
+            content: '←';
+            transition: transform 0.3s ease;
+        }
+
+        .back-btn:hover {
+            opacity: 1;
+            color: var(--warm-gold);
+        }
+
+        .back-btn:hover::before {
+            transform: translateX(-5px);
+        }
+
+        .project-header {
+            margin-bottom: 5rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(26, 35, 50, 0.08);
+        }
+
+        .project-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            margin-bottom: 1.5rem;
+            line-height: 1;
+        }
+
+        .project-meta {
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--warm-gold);
+            font-weight: 400;
+        }
+
+        .detail-images-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4rem;
+        }
+
+        .detail-image {
+            width: 100%;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 0.8s ease forwards;
+            overflow: hidden;
+        }
+
+        .detail-image:nth-child(1) { animation-delay: 0.1s; }
+        .detail-image:nth-child(2) { animation-delay: 0.2s; }
+        .detail-image:nth-child(3) { animation-delay: 0.3s; }
+        .detail-image:nth-child(4) { animation-delay: 0.4s; }
+
+        .detail-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.8s ease;
+        }
+
+        .detail-image:hover img {
+            transform: scale(1.02);
+        }
+
+        .image-caption {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: var(--soft-sage);
+            margin-top: 1rem;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .image-caption::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--warm-gold);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* About Page */
+        .about-page {
+            padding: 10rem 3rem 5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-hero {
+            margin-bottom: 8rem;
+        }
+
+        .about-hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            line-height: 0.95;
+            margin-bottom: 3rem;
+        }
+
+        .about-intro {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+            font-weight: 300;
+            line-height: 1.7;
+            max-width: 800px;
+            opacity: 0.85;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8rem;
+            margin-bottom: 8rem;
+        }
+
+        .about-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            margin-bottom: 2.5rem;
+            color: var(--deep-navy);
+            position: relative;
+            display: inline-block;
+        }
+
+        .about-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 0;
+            width: 30px;
+            height: 1px;
+            background: var(--warm-gold);
+        }
+
+        .about-section p {
+            font-size: 0.95rem;
+            line-height: 2;
+            font-weight: 300;
+            opacity: 0.75;
+            margin-bottom: 1.5rem;
+        }
+
+        .services-grid {
+            display: grid;
+            gap: 0;
+            margin-top: 2rem;
+        }
+
+        .service-item {
+            font-size: 0.85rem;
+            font-weight: 300;
+            padding: 1.8rem 0;
+            border-bottom: 1px solid rgba(26, 35, 50, 0.08);
+            letter-spacing: 0.05em;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            cursor: default;
+        }
+
+        .service-item:first-child {
+            border-top: 1px solid rgba(26, 35, 50, 0.08);
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 0;
+            height: 1px;
+            background: var(--warm-gold);
+            transition: width 0.4s ease;
+        }
+
+        .service-item:hover {
+            color: var(--warm-gold);
+            padding-left: 2rem;
+        }
+
+        .service-item:hover::before {
+            width: 1rem;
+        }
+
+        .contact-section {
+            background: var(--deep-navy);
+            padding: 6rem;
+            margin: 0 -3rem;
+            color: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(201, 169, 97, 0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .contact-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 300;
+            margin-bottom: 4rem;
+            letter-spacing: 0.02em;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+        }
+
+        .contact-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--warm-gold);
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .contact-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--deep-navy);
+            padding: 6rem 3rem;
+            color: var(--white);
+            margin-top: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(26, 35, 50, 0.5) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 300;
+            margin-bottom: 4rem;
+            letter-spacing: 0.02em;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 4rem;
+        }
+
+        .footer-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--warm-gold);
+            margin-bottom: 1rem;
+            font-weight: 400;
+        }
+
+        .footer-value {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+        }
+
+        .footer-bottom {
+            margin-top: 5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(250, 250, 250, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copyright {
+            font-size: 0.65rem;
+            letter-spacing: 0.15em;
+            opacity: 0.4;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.5rem 2rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .nav-links {
+                gap: 2rem;
+                margin-left: auto;
+            }
+
+            .content-wrapper,
+            .project-detail-page,
+            .about-page {
+                padding-left: 2rem;
+                padding-right: 2rem;
+            }
+
+            .masonry-grid {
+                padding: 0;
+                column-gap: 1.5rem;
+            }
+
+            .project-item {
+                margin-bottom: 2rem;
+            }
+
+            .filter-container {
+                gap: 1.5rem 2.5rem;
+                row-gap: 1rem;
+            }
+
+            .dropdown-menu {
+                display: none !important;
+            }
+
+            .contact-section,
+            .footer {
+                padding: 4rem 2rem;
+            }
+
+            .contact-grid,
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .scroll-indicator {
+                display: none;
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom cursor effect for project items */
+        .project-item {
+            cursor: pointer;
+        }
+
+        /* Selection color */
+        ::selection {
+            background: var(--warm-gold);
+            color: var(--pure-white);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        /* ============================================================
+           🔧 [수정 포인트 3] 이미지 비율 패턴
+           프로젝트 카드의 비율을 결정합니다. 이 순서대로 반복됩니다.
+           
+           - 'wide': 가로 이미지 (4:3)
+           - 'tall': 세로 이미지 (3:4)
+           - 'square': 정사각형 (1:1)
+           - 'portrait': 세로 긴 이미지 (2:3)
+           ============================================================ */
+        const sizePattern = ['wide', 'tall', 'square', 'portrait', 'wide', 'square', 'tall', 'wide'];
+
+        /* ============================================================
+           🔧 [수정 포인트 4] 프로젝트 데이터
+           
+           새 프로젝트를 추가하려면 아래 형식으로 추가하세요:
+           
+           {
+               id: 번호,              // 고유 번호 (중복 안 됨)
+               title: "프로젝트명",    // 영어로 작성
+               category: "카테고리값", // residential, commercial, office, cafe, exterior 중 선택
+               categoryName: "표시명", // 화면에 표시될 카테고리 이름
+               thumbnail: "썸네일 경로",
+               images: ["상세이미지1", "상세이미지2", ...]
+                    { src: "이미지경로", caption: "코멘트" }, // 코멘트 있을 시
+                    "images/commercial/converse_3.png", // 코멘트 없을 시 (이미지만)
+           }
+           
+           카테고리 종류:
+           - residential (RESIDENTIAL) : 주거
+           - commercial (COMMERCIAL) : 상업
+           - office (OFFICE) : 오피스
+           - cafe (CAFE & RESTAURANT) : 카페/레스토랑
+           - exterior (EXTERIOR) : 외관
+           ============================================================ */
+        // Project data
+        const projectsData = [
+            {
+                id: 1,
+                title: "CONVERSE POP-UP STORE",
+                category: "commercial",
+                categoryName: "POP-UP STORE",
+                thumbnail: "images/commercial/converse_1.png",
+                images: [
+                    { src: "images/commercial/converse_1.png", caption: "Man Cave" },
+                    { src: "images/commercial/converse_2.png", caption: "Practice Space" },
+                    { src: "images/commercial/converse_3.png", caption: "Studio" },
+                    { src: "images/commercial/converse_4.png", caption: "Custom Space" },
+                    { src: "images/commercial/converse_5.png", caption: "Music Studio" }
+                ]
+            },
+            {
+                id: 2,
+                title: "OKKI IZAKAYA",
+                category: "cafe",
+                categoryName: "IZAKAYA",
+                thumbnail: "images/cafe_restaurant/okki2309_1.png",
+                images: [
+                    { src: "images/cafe_restaurant/okki2309_1.png", caption: "1F Hall" },
+                    { src: "images/cafe_restaurant/okki2309_2.png", caption: "1F Bar" },
+                    { src: "images/cafe_restaurant/okki2309_3.png", caption: "1F Main Hall" },
+                    { src: "images/cafe_restaurant/okki2309_4.png", caption: "1F Main Hall" },
+                    { src: "images/cafe_restaurant/okki2309_5.png", caption: "1F Gacha" },
+                    { src: "images/cafe_restaurant/okki2309_6.png", caption: "2F" },
+                    { src: "images/cafe_restaurant/okki2309_7.png", caption: "2F Hall" },
+                    { src: "images/cafe_restaurant/okki2309_8.png", caption: "Exterior Coloring" }
+                ]
+            },
+            {
+                id: 3,
+                title: "PORTANA PIZZA",
+                category: "cafe",
+                categoryName: "PIZZA",
+                thumbnail: "images/cafe_restaurant/portana1.png",
+                images: [
+                    { src: "images/cafe_restaurant/portana1.png", caption: "" },
+                    { src: "images/cafe_restaurant/portana2.png", caption: "" },
+                    { src: "images/cafe_restaurant/portana3.png", caption: "" }
+                ]
+            },
+            {
+                id: 4,
+                title: "PHYSIO FITNESS",
+                category: "commercial",
+                categoryName: "FITNESS",
+                thumbnail: "images/commercial/fitness1.png",
+                images: [
+                    { src: "images/commercial/fitness1.png", caption: "Exterior" },
+                    { src: "images/commercial/fitness2.png", caption: "Main Hall" },
+                    { src: "images/commercial/fitness3.png", caption: "Entrance" },
+                    { src: "images/commercial/fitness4.png", caption: "Pilates" },
+                    { src: "images/commercial/fitness5.png", caption: "Locker Room" }
+                ]
+            }
+        ];
+
+        // Navigation Component
+        function Navigation({ currentPage, setCurrentPage, setFilter }) {
+            const [scrolled, setScrolled] = useState(false);
+
+            useEffect(() => {
+                const handleScroll = () => {
+                    setScrolled(window.scrollY > 50);
+                };
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const handleCategoryClick = (category) => {
+                if (setFilter) {
+                    setFilter(category);
+                }
+                setCurrentPage('projects');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleProjectsClick = () => {
+                if (setFilter) {
+                    setFilter('all');
+                }
+                setCurrentPage('projects');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            return (
+                <nav className={scrolled ? 'scrolled' : ''}>
+                    {/* ============================================================
+                        🔧 [수정 포인트 5] 상단 로고 이미지
+                        logo.png 파일을 HTML과 같은 폴더에 넣으세요.
+                        파일이 없으면 자동으로 "SOHA DESIGN" 텍스트가 표시됩니다.
+                        ============================================================ */}
+                    <img 
+                        src="logo.png" 
+                        alt="SOHA DESIGN" 
+                        className="logo" 
+                        onClick={() => setCurrentPage('home')}
+                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                    />
+                    <div className="logo-text" onClick={() => setCurrentPage('home')} style={{display: 'none'}}>
+                        SOHA DESIGN
+                    </div>
+                    <ul className="nav-links">
+                        <li>
+                            <a onClick={handleProjectsClick}>Projects</a>
+                            <div className="dropdown-menu">
+                                <div className="dropdown-content">
+                                    <div className="dropdown-item" onClick={() => handleCategoryClick('residential')}>Residential</div>
+                                    <div className="dropdown-item" onClick={() => handleCategoryClick('commercial')}>Commercial</div>
+                                    <div className="dropdown-item" onClick={() => handleCategoryClick('office')}>Office</div>
+                                    <div className="dropdown-item" onClick={() => handleCategoryClick('cafe')}>Cafe & Restaurant</div>
+                                    <div className="dropdown-item" onClick={() => handleCategoryClick('exterior')}>Exterior</div>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a onClick={() => setCurrentPage('about')}>About</a></li>
+                    </ul>
+                </nav>
+            );
+        }
+
+        // Home Page
+        function Home({ setCurrentPage, setSelectedProject }) {
+            const handleProjectClick = (projectId) => {
+                setSelectedProject(projectId);
+                setCurrentPage('projectDetail');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            return (
+                <>
+                    <div className="hero">
+                        <div className="hero-content">
+                            {/* ============================================================
+                                🔧 [수정 포인트 6] 히어로 로고 이미지
+                                hero-logo.png 파일을 HTML과 같은 폴더에 넣으세요.
+                                파일이 없으면 표시되지 않습니다.
+                                ============================================================ */}
+                            <img 
+                                src="hero-logo.png" 
+                                alt="SOHA DESIGN" 
+                                className="hero-logo"
+                                onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                            
+                            {/* ============================================================
+                                🔧 [수정 포인트 7] 메인 타이틀
+                                회사명을 변경하려면 아래 텍스트를 수정하세요.
+                                ============================================================ */}
+                            
+                            
+                            {/* ============================================================
+                                🔧 [수정 포인트 8] 서브타이틀
+                                ============================================================ */}
+                            <div className="hero-subtitle">Interior Design & Visualization</div>
+                            
+                            {/* ============================================================
+                                🔧 [수정 포인트 9] 메인 설명 문구
+                                ============================================================ */}
+                            <p className="hero-description">
+                                We design the essence of space.<br/>
+                                Sophisticated, organic, and harmonious —<br/>
+                                that's the experience we create.
+                            </p>
+                        </div>
+                        <div className="scroll-indicator">
+                            <span>Scroll</span>
+                            <div className="scroll-line"></div>
+                        </div>
+                    </div>
+                    <div className="content-wrapper">
+                        <div className="masonry-grid">
+                            {projectsData.map((project, index) => (
+                                <div 
+                                    key={project.id} 
+                                    className={`project-item ${sizePattern[index % sizePattern.length]}`}
+                                    onClick={() => handleProjectClick(project.id)}
+                                >
+                                    <img src={project.thumbnail} alt={project.title} />
+                                    <div className="project-overlay">
+                                        <div className="project-category">{project.categoryName}</div>
+                                        <div className="project-name">{project.title}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        // Projects Page
+        function Projects({ setCurrentPage, setSelectedProject, filter, setFilter }) {
+            const filteredProjects = filter === 'all' 
+                ? projectsData 
+                : projectsData.filter(p => p.category === filter);
+
+            const handleProjectClick = (projectId) => {
+                setSelectedProject(projectId);
+                setCurrentPage('projectDetail');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            return (
+                <div className="content-wrapper" style={{paddingTop: '10rem'}}>
+                    <div className="projects-section">
+                        <h1 className="section-title">Projects</h1>
+                        <span className="section-subtitle">Selected Works</span>
+                        <div className="filter-container">
+                            <button 
+                                className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                                onClick={() => setFilter('all')}
+                            >
+                                All
+                            </button>
+                            <button 
+                                className={`filter-btn ${filter === 'residential' ? 'active' : ''}`}
+                                onClick={() => setFilter('residential')}
+                            >
+                                Residential
+                            </button>
+                            <button 
+                                className={`filter-btn ${filter === 'commercial' ? 'active' : ''}`}
+                                onClick={() => setFilter('commercial')}
+                            >
+                                Commercial
+                            </button>
+                            <button 
+                                className={`filter-btn ${filter === 'office' ? 'active' : ''}`}
+                                onClick={() => setFilter('office')}
+                            >
+                                Office
+                            </button>
+                            <button 
+                                className={`filter-btn ${filter === 'cafe' ? 'active' : ''}`}
+                                onClick={() => setFilter('cafe')}
+                            >
+                                Cafe & Restaurant
+                            </button>
+                            <button 
+                                className={`filter-btn ${filter === 'exterior' ? 'active' : ''}`}
+                                onClick={() => setFilter('exterior')}
+                            >
+                                Exterior
+                            </button>
+                        </div>
+                        <div className="masonry-grid">
+                            {filteredProjects.map((project, index) => (
+                                <div 
+                                    key={project.id} 
+                                    className={`project-item ${sizePattern[index % sizePattern.length]}`}
+                                    onClick={() => handleProjectClick(project.id)}
+                                >
+                                    <img src={project.thumbnail} alt={project.title} />
+                                    <div className="project-overlay">
+                                        <div className="project-category">{project.categoryName}</div>
+                                        <div className="project-name">{project.title}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Project Detail Page
+        function ProjectDetail({ selectedProject, setCurrentPage }) {
+            const project = projectsData.find(p => p.id === selectedProject);
+
+            if (!project) {
+                return <div className="project-detail-page">Project not found</div>;
+            }
+
+            return (
+                <div className="project-detail-page">
+                    <div className="back-btn" onClick={() => setCurrentPage('projects')}>
+                        Back to Projects
+                    </div>
+                    <div className="project-header">
+                        <h1>{project.title}</h1>
+                        <div className="project-meta">{project.categoryName}</div>
+                    </div>
+                    <div className="detail-images-grid">
+                        {project.images.map((img, index) => {
+                            /* 
+                               이미지 캡션 사용법:
+                               - 캡션 없이: "이미지경로.jpg"
+                               - 캡션 있으면: { src: "이미지경로.jpg", caption: "설명 텍스트" }
+                            */
+                            const src = typeof img === 'string' ? img : img.src;
+                            const caption = typeof img === 'object' ? img.caption : null;
+                            return (
+                                <div key={index} className="detail-image">
+                                    <img src={src} alt={`${project.title} - ${index + 1}`} />
+                                    {caption && <p className="image-caption">{caption}</p>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        // About Page
+        function About() {
+            return (
+                <div className="about-page">
+                    <div className="about-hero">
+                        <h1>About</h1>
+                        
+                        {/* ============================================================
+                            🔧 [수정 포인트 10] About 인트로 문구
+                            ============================================================ */}
+                        <p className="about-intro">
+                            SOHA DESIGN goes beyond creating beautiful spaces — 
+                            we embody lifestyle and brand identity through spatial experiences, 
+                            designing environments where people and space harmoniously connect.
+                        </p>
+                    </div>
+                    <div className="about-content">
+                        <div className="about-section">
+                            {/* ============================================================
+                                🔧 [수정 포인트 11] Who We Are 섹션
+                                ============================================================ */}
+                            <h2>Who We Are</h2>
+                            <p>
+                                We are a design studio specializing in commercial and retail interiors, 
+                                from cozy cafes to modern office spaces.
+                            </p>
+                            <p>
+                                With expertise in design planning, documentation, and 3D visualization, 
+                                we help you see and refine your vision before construction begins.
+                            </p>
+                        </div>
+                        <div className="about-section">
+                            {/* ============================================================
+                                🔧 [수정 포인트 12] What We Do 서비스 목록
+                                서비스를 추가/삭제/수정하려면 아래 항목을 편집하세요.
+                                ============================================================ */}
+                            <h2>What We Do</h2>
+                            <div className="services-grid">
+                                <div className="service-item">Design Planning</div>
+                                <div className="service-item">Space Layout & Documentation</div>
+                                <div className="service-item">3D Rendering & Visualization</div>
+                                <div className="service-item">Interior Perspective</div>
+                                <div className="service-item">Exterior & Bird's Eye View</div>
+                                <div className="service-item">Material & Finish Consulting</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Footer Component
+        function Footer() {
+            return (
+                <div className="footer">
+                    <div className="footer-content">
+                        <h2>Let's Work Together</h2>
+                        <div className="footer-grid">
+                            {/* ============================================================
+                                🔧 [수정 포인트 13] 연락처 - 이메일
+                                ============================================================ */}
+                            <div className="footer-item">
+                                <div className="footer-label">Email</div>
+                                <div className="footer-value">dahee2769@naver.com</div>
+                            </div>
+                            
+                            {/* ============================================================
+                                🔧 [수정 포인트 14] 연락처 - 전화번호
+                                ============================================================ */}
+                            <div className="footer-item">
+                                <div className="footer-label">Phone</div>
+                                <div className="footer-value">+82 10-2271-2769</div>
+                            </div>
+                            
+                            {/* ============================================================
+                                🔧 [수정 포인트 15] 연락처 - 위치
+                                ============================================================ */}
+                            <div className="footer-item">
+                                <div className="footer-label">Location</div>
+                                <div className="footer-value">Seoul, Korea</div>
+                            </div>
+                        </div>
+                        <div className="footer-bottom">
+                            {/* ============================================================
+                                🔧 [수정 포인트 16] 저작권 표시
+                                ============================================================ */}
+                            <div className="footer-copyright">© 2026 SOHA DESIGN. All rights reserved.</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Main App
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [filter, setFilter] = useState('all');
+
+            let content;
+            if (currentPage === 'home') {
+                content = <Home setCurrentPage={setCurrentPage} setSelectedProject={setSelectedProject} />;
+            } else if (currentPage === 'projects') {
+                content = <Projects setCurrentPage={setCurrentPage} setSelectedProject={setSelectedProject} filter={filter} setFilter={setFilter} />;
+            } else if (currentPage === 'projectDetail') {
+                content = <ProjectDetail selectedProject={selectedProject} setCurrentPage={setCurrentPage} />;
+            } else if (currentPage === 'about') {
+                content = <About />;
+            }
+
+            return (
+                <>
+                    <Navigation currentPage={currentPage} setCurrentPage={setCurrentPage} setFilter={setFilter} />
+                    <main>
+                        {content}
+                    </main>
+                    <Footer />
+                </>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
