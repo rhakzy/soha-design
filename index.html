@@ -45,6 +45,31 @@
             background-color: var(--white);
             color: var(--deep-navy);
             overflow-x: hidden;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+
+        /* 이미지 저장 방지 */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            user-drag: none;
+            pointer-events: none;
+        }
+
+        /* 클릭 가능한 요소는 포인터 유지 */
+        a, button, .project-item, .back-btn, .filter-btn, .logo, .logo-text, .nav-links a, .dropdown-item, .detail-image {
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        .detail-image img {
+            pointer-events: none;
         }
 
         /* 세리프 폰트 클래스 */
@@ -943,18 +968,25 @@
                 line-height: 1.7 !important;
             }
 
+            /* 모바일 hero 높이 조정 */
+            .hero {
+                min-height: calc(100vh - 60px) !important;
+                min-height: calc(100svh - 60px) !important;
+            }
+
             /* 모바일 스크롤 인디케이터 표시 */
             .scroll-indicator {
                 display: flex !important;
-                bottom: 1.5rem !important;
+                bottom: 1rem !important;
+                position: absolute !important;
             }
 
             .scroll-indicator span {
-                font-size: 0.5rem !important;
+                font-size: 0.45rem !important;
             }
 
             .scroll-line {
-                height: 30px !important;
+                height: 25px !important;
             }
 
             /* 모바일 상세페이지 간격 조정 */
@@ -982,6 +1014,25 @@
             .about-page {
                 padding-left: 1.5rem;
                 padding-right: 1.5rem;
+            }
+
+            /* 모바일 Projects 페이지 상단 여백 */
+            .projects-page-wrapper {
+                padding-top: 6rem !important;
+            }
+
+            .projects-section {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+
+            .section-title {
+                font-size: clamp(2rem, 8vw, 3rem) !important;
+                margin-bottom: 1.5rem !important;
+            }
+
+            .section-subtitle {
+                margin-bottom: 2rem !important;
             }
 
             .masonry-grid {
@@ -1112,21 +1163,19 @@
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0,0,0,0.3);
+            background: none;
             border: none;
             color: var(--pure-white);
-            font-size: 2rem;
+            font-size: 2.5rem;
             cursor: pointer;
-            opacity: 0.7;
-            transition: all 0.3s;
-            padding: 1rem 1.2rem;
+            opacity: 0.6;
+            transition: opacity 0.3s;
+            padding: 1rem;
             z-index: 10001;
-            border-radius: 50%;
         }
 
         .lightbox-nav:hover {
             opacity: 1;
-            background: rgba(0,0,0,0.5);
         }
 
         .lightbox-prev {
@@ -1146,34 +1195,40 @@
 
         @media (max-width: 768px) {
             .lightbox-nav {
-                font-size: 1.5rem;
-                padding: 0.8rem 1rem;
+                font-size: 2rem;
+                padding: 0.5rem;
                 top: 50%;
+                transform: translateY(-50%);
             }
 
             .lightbox-prev {
-                left: 0.8rem;
+                left: 0.5rem;
             }
 
             .lightbox-next {
-                right: 0.8rem;
+                right: 0.5rem;
             }
 
             .lightbox-close {
                 position: fixed;
-                top: 1.5rem;
-                right: 1.5rem;
-                font-size: 1.2rem;
+                top: 1rem;
+                right: 1rem;
+                font-size: 1.5rem;
             }
 
             .lightbox-caption {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
                 padding: 0 1rem;
             }
 
             .lightbox-content img {
-                max-height: 65vh;
+                max-height: 60vh;
             }
+        }
+
+        /* Projects 페이지 wrapper */
+        .projects-page-wrapper {
+            padding-top: 10rem;
         }
 
         /* Selection color */
@@ -1183,7 +1238,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -1431,7 +1486,7 @@
             };
 
             return (
-                <div className="content-wrapper" style={{paddingTop: '10rem'}}>
+                <div className="content-wrapper projects-page-wrapper">
                     <div className="projects-section">
                         <h1 className="section-title">Projects</h1>
                         <span className="section-subtitle">Selected Works</span>
