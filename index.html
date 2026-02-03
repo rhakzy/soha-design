@@ -1216,8 +1216,13 @@
             }
 
             .lightbox-nav {
-                font-size: 2rem;
-                padding: 0.8rem;
+                font-size: 1.5rem;
+                width: 2.5rem;
+                height: 2.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0;
                 top: 50%;
                 transform: translateY(-50%);
                 background: rgba(0,0,0,0.3);
@@ -1435,8 +1440,7 @@
         function Home({ setCurrentPage, setSelectedProject }) {
             const handleProjectClick = (projectId) => {
                 setSelectedProject(projectId);
-                setCurrentPage('projectDetail');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setCurrentPage('projectDetail', projectId);
             };
 
             return (
@@ -1509,8 +1513,7 @@
 
             const handleProjectClick = (projectId) => {
                 setSelectedProject(projectId);
-                setCurrentPage('projectDetail');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setCurrentPage('projectDetail', projectId);
             };
 
             return (
