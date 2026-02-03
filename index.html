@@ -1016,9 +1016,13 @@
                 padding-right: 1.5rem;
             }
 
-            /* 모바일 Projects 페이지 상단 여백 */
+            .about-page {
+                padding-top: 7rem !important;
+            }
+
+            /* 모바일 Projects 페이지 상단 여백 - About과 동일 */
             .projects-page-wrapper {
-                padding-top: 6rem !important;
+                padding-top: 7rem !important;
             }
 
             .projects-section {
@@ -1027,12 +1031,12 @@
             }
 
             .section-title {
-                font-size: clamp(2rem, 8vw, 3rem) !important;
-                margin-bottom: 1.5rem !important;
+                font-size: clamp(3.5rem, 12vw, 5rem) !important;
+                margin-bottom: 2rem !important;
             }
 
             .section-subtitle {
-                margin-bottom: 2rem !important;
+                margin-bottom: 2.5rem !important;
             }
 
             .masonry-grid {
@@ -1117,6 +1121,13 @@
             align-items: center;
         }
 
+        .lightbox-image-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .lightbox-content img {
             max-width: 90vw;
             max-height: 75vh;
@@ -1160,7 +1171,7 @@
         }
 
         .lightbox-nav {
-            position: fixed;
+            position: absolute;
             top: 50%;
             transform: translateY(-50%);
             background: none;
@@ -1179,11 +1190,11 @@
         }
 
         .lightbox-prev {
-            left: 2rem;
+            left: -3.5rem;
         }
 
         .lightbox-next {
-            right: 2rem;
+            right: -3.5rem;
         }
 
         .lightbox-counter {
@@ -1194,19 +1205,24 @@
         }
 
         @media (max-width: 768px) {
+            .lightbox-image-wrapper {
+                width: 100%;
+                padding: 0 2.5rem;
+            }
+
             .lightbox-nav {
-                font-size: 2rem;
+                font-size: 1.8rem;
                 padding: 0.5rem;
                 top: 50%;
                 transform: translateY(-50%);
             }
 
             .lightbox-prev {
-                left: 0.5rem;
+                left: 0;
             }
 
             .lightbox-next {
-                right: 0.5rem;
+                right: 0;
             }
 
             .lightbox-close {
@@ -1222,7 +1238,8 @@
             }
 
             .lightbox-content img {
-                max-height: 60vh;
+                max-height: 55vh;
+                max-width: 100%;
             }
         }
 
@@ -1570,13 +1587,15 @@
                 <div className="lightbox-overlay" onClick={onClose}>
                     <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
                         <button className="lightbox-close" onClick={onClose}>✕</button>
-                        {images.length > 1 && (
-                            <button className="lightbox-nav lightbox-prev" onClick={onPrev}>‹</button>
-                        )}
-                        <img src={src} alt="" />
-                        {images.length > 1 && (
-                            <button className="lightbox-nav lightbox-next" onClick={onNext}>›</button>
-                        )}
+                        <div className="lightbox-image-wrapper">
+                            {images.length > 1 && (
+                                <button className="lightbox-nav lightbox-prev" onClick={onPrev}>‹</button>
+                            )}
+                            <img src={src} alt="" />
+                            {images.length > 1 && (
+                                <button className="lightbox-nav lightbox-next" onClick={onNext}>›</button>
+                            )}
+                        </div>
                         {caption && <div className="lightbox-caption">{caption}</div>}
                         {images.length > 1 && (
                             <div className="lightbox-counter">{currentIndex + 1} / {images.length}</div>
@@ -1760,7 +1779,9 @@
                         setFilter('all');
                     }
                     // 뒤로가기/앞으로가기 시 상단으로 스크롤
-                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    setTimeout(() => {
+                        window.scrollTo(0, 0);
+                    }, 0);
                 };
 
                 window.addEventListener('popstate', handlePopState);
