@@ -461,24 +461,20 @@
             display: block;
         }
 
-        .project-item.tall {
-            aspect-ratio: 3/4;
-        }
-
-        .project-item.wide {
-            aspect-ratio: 4/3;
-        }
-
         .project-item.square {
             aspect-ratio: 1/1;
         }
 
-        .project-item.portrait {
+        .project-item.tall {
             aspect-ratio: 2/3;
         }
 
-        .project-item.landscape {
-            aspect-ratio: 16/9;
+        .project-item.wide {
+            aspect-ratio: 3/2;
+        }
+
+        .project-item.portrait {
+            aspect-ratio: 3/4;
         }
 
         .project-item:hover {
@@ -1290,7 +1286,7 @@
            - 'square': 정사각형 (1:1)
            - 'portrait': 세로 긴 이미지 (2:3)
            ============================================================ */
-        const sizePattern = ['wide', 'tall', 'square', 'portrait', 'landscape'];
+        const sizePattern = ['square', 'tall', 'wide', 'portrait'];
 
         /* ============================================================
            🔧 [수정 포인트 4] 프로젝트 데이터
