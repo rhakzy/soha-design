@@ -447,9 +447,7 @@
 
         @media (max-width: 768px) {
             .masonry-grid {
-                column-count: unset;
-                display: flex;
-                flex-direction: column;
+                column-count: 1;
             }
         }
 
@@ -1399,6 +1397,27 @@
                     { src: "images/exterior/samsung_evhall1_2.png", caption: "Elevator Hall" },
                     { src: "images/exterior/samsung_evhall2_3.png", caption: "Elevator Hall" }
                 ]
+            },
+            {
+                id: 7,
+                title: "JEJU TOWN HOUSE",
+                category: "residential",
+                categoryName: "RESIDENTIAL",
+                thumbnail: "images/exterior/saamsung_exterior.png",
+                images: [
+                    { src: "images/residential/jeju_2.png", caption: "1F Isometric View" },
+                    { src: "images/residential/jeju_1.png", caption: "Living Room" },
+                    { src: "images/residential/jeju_3.png", caption: "Living Room" },
+                    { src: "images/residential/jeju_4.png", caption: "Corridor" },
+                    { src: "images/residential/jeju_5.png", caption: "Bed Room" },
+                    { src: "images/residential/jeju_6.png", caption: "2F Isometric View" },
+                    { src: "images/residential/jeju_7.png", caption: "Corridor" },
+                    { src: "images/residential/jeju_8.png", caption: "Stairs" },
+                    { src: "images/residential/jeju_9.png", caption: "Bed Room" },
+                    { src: "images/residential/jeju_10.png", caption: "Guest Room" },
+                    { src: "images/residential/jeju_11.png", caption: "Bath Room" },
+                    { src: "images/residential/jeju_12.png", caption: "Bath Room" }
+                ]
             }
         ];
 
@@ -1415,11 +1434,19 @@
             }, []);
 
             const handleCategoryClick = (category) => {
-                setCurrentPage('projects', null, category);
+                if (setFilter) {
+                    setFilter(category);
+                }
+                setCurrentPage('projects');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
             const handleProjectsClick = () => {
-                setCurrentPage('projects', null, 'all');
+                if (setFilter) {
+                    setFilter('all');
+                }
+                setCurrentPage('projects');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
             return (
@@ -1538,13 +1565,6 @@
                 setCurrentPage('projectDetail', projectId);
             };
 
-            // 필터 변경 (URL 해시도 업데이트)
-            const handleFilterChange = (newFilter) => {
-                setFilter(newFilter);
-                const hash = newFilter !== 'all' ? `#/projects/${newFilter}` : '#/projects';
-                window.history.replaceState(null, '', hash);
-            };
-
             return (
                 <div className="content-wrapper projects-page-wrapper">
                     <div className="projects-section">
@@ -1553,37 +1573,37 @@
                         <div className="filter-container">
                             <button 
                                 className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('all')}
+                                onClick={() => setFilter('all')}
                             >
                                 All
                             </button>
                             <button 
                                 className={`filter-btn ${filter === 'residential' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('residential')}
+                                onClick={() => setFilter('residential')}
                             >
                                 Residential
                             </button>
                             <button 
                                 className={`filter-btn ${filter === 'commercial' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('commercial')}
+                                onClick={() => setFilter('commercial')}
                             >
                                 Commercial
                             </button>
                             <button 
                                 className={`filter-btn ${filter === 'office' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('office')}
+                                onClick={() => setFilter('office')}
                             >
                                 Office
                             </button>
                             <button 
                                 className={`filter-btn ${filter === 'cafe' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('cafe')}
+                                onClick={() => setFilter('cafe')}
                             >
                                 Cafe & Restaurant
                             </button>
                             <button 
                                 className={`filter-btn ${filter === 'exterior' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('exterior')}
+                                onClick={() => setFilter('exterior')}
                             >
                                 Exterior
                             </button>
@@ -1840,89 +1860,68 @@
             );
         }
 
-        // URL 해시에서 상태 파싱
-        function parseHash() {
-            const hash = window.location.hash.slice(1) || '/';
-            const parts = hash.split('/').filter(Boolean);
-            
-            if (parts.length === 0 || parts[0] === 'home') {
-                return { page: 'home', project: null, filter: 'all' };
-            }
-            if (parts[0] === 'about') {
-                return { page: 'about', project: null, filter: 'all' };
-            }
-            if (parts[0] === 'projects') {
-                return { page: 'projects', project: null, filter: parts[1] || 'all' };
-            }
-            if (parts[0] === 'project' && parts[1]) {
-                return { page: 'projectDetail', project: parseInt(parts[1]), filter: 'all' };
-            }
-            return { page: 'home', project: null, filter: 'all' };
-        }
-
-        // 상태를 URL 해시로 변환
-        function stateToHash(page, project, filter) {
-            if (page === 'home') return '#/';
-            if (page === 'about') return '#/about';
-            if (page === 'projects') return filter !== 'all' ? `#/projects/${filter}` : '#/projects';
-            if (page === 'projectDetail' && project) return `#/project/${project}`;
-            return '#/';
-        }
-
         // Main App
         function App() {
-            // URL 해시에서 초기 상태 로드
-            const initial = parseHash();
-            const [currentPage, setCurrentPage] = useState(initial.page);
-            const [selectedProject, setSelectedProject] = useState(initial.project);
-            const [filter, setFilter] = useState(initial.filter);
+            const [currentPage, setCurrentPage] = useState('home');
+            const [selectedProject, setSelectedProject] = useState(null);
+            const [filter, setFilter] = useState('all');
 
             // 현재 페이지 ref (popstate에서 페이지 변경 감지용)
             const currentPageRef = useRef(currentPage);
             useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
 
-            // 브라우저 뒤로가기/앞으로가기 및 해시 변경 지원
+            // 브라우저 뒤로가기/앞으로가기 지원
             useEffect(() => {
-                const handleHashChange = () => {
+                const handlePopState = (event) => {
                     // X버튼으로 라이트박스 닫는 중이면 무시
                     if (_closingLightboxByButton) return;
 
                     document.body.style.overflow = '';
                     
-                    const state = parseHash();
-                    const isPageChange = state.page !== currentPageRef.current;
-                    
-                    setCurrentPage(state.page);
-                    setSelectedProject(state.project);
-                    setFilter(state.filter);
-                    
-                    // 실제 페이지가 변경된 경우에만 상단 스크롤
-                    if (isPageChange) {
-                        setTimeout(() => {
-                            window.scrollTo(0, 0);
-                        }, 0);
+                    if (event.state && event.state.page) {
+                        const isPageChange = event.state.page !== currentPageRef.current;
+                        
+                        setCurrentPage(event.state.page);
+                        setSelectedProject(event.state.project || null);
+                        setFilter(event.state.filter || 'all');
+                        
+                        // 실제 페이지가 변경된 경우에만 상단 스크롤
+                        if (isPageChange) {
+                            setTimeout(() => {
+                                window.scrollTo(0, 0);
+                            }, 0);
+                        }
+                    } else if (!event.state) {
+                        setCurrentPage('home');
+                        setTimeout(() => { window.scrollTo(0, 0); }, 0);
                     }
                 };
 
-                window.addEventListener('hashchange', handleHashChange);
-                window.addEventListener('popstate', handleHashChange);
+                window.addEventListener('popstate', handlePopState);
+                
+                // 초기 상태 저장
+                if (!window.history.state) {
+                    window.history.replaceState(
+                        { page: 'home', project: null, filter: 'all' }, 
+                        '', 
+                        window.location.pathname
+                    );
+                }
 
-                return () => {
-                    window.removeEventListener('hashchange', handleHashChange);
-                    window.removeEventListener('popstate', handleHashChange);
-                };
+                return () => window.removeEventListener('popstate', handlePopState);
             }, []);
 
-            // 페이지 변경 함수 (URL 해시 업데이트)
+            // 페이지 변경 함수 (히스토리 추가)
             const navigateTo = (page, project = selectedProject, newFilter = filter) => {
                 setCurrentPage(page);
                 if (project !== selectedProject) setSelectedProject(project);
                 if (newFilter !== filter) setFilter(newFilter);
                 
-                // URL 해시 업데이트
-                const newHash = stateToHash(page, project, newFilter);
-                window.history.pushState(null, '', newHash);
-                
+                window.history.pushState(
+                    { page, project, filter: newFilter }, 
+                    '', 
+                    window.location.pathname
+                );
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
