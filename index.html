@@ -477,6 +477,10 @@
             aspect-ratio: 2/3;
         }
 
+        .project-item.landscape {
+            aspect-ratio: 3/2;
+        }
+
         .project-item:hover {
             transform: translateY(-8px);
             box-shadow: 0 30px 60px rgba(26, 35, 50, 0.15);
@@ -1286,7 +1290,7 @@
            - 'square': 정사각형 (1:1)
            - 'portrait': 세로 긴 이미지 (2:3)
            ============================================================ */
-        const sizePattern = ['wide', 'tall', 'square', 'portrait'];
+        const sizePattern = ['wide', 'square', 'landscape', 'tall'];
 
         /* ============================================================
            🔧 [수정 포인트 4] 프로젝트 데이터
