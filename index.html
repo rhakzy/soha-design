@@ -477,6 +477,10 @@
             aspect-ratio: 2/3;
         }
 
+        .project-item.landscape {
+            aspect-ratio: 16/9;
+        }
+
         .project-item:hover {
             transform: translateY(-8px);
             box-shadow: 0 30px 60px rgba(26, 35, 50, 0.15);
@@ -1286,7 +1290,7 @@
            - 'square': 정사각형 (1:1)
            - 'portrait': 세로 긴 이미지 (2:3)
            ============================================================ */
-        const sizePattern = ['wide', 'tall', 'square', 'portrait', 'wide', 'square', 'tall', 'wide'];
+        const sizePattern = ['wide', 'tall', 'square', 'portrait', 'landscape'];
 
         /* ============================================================
            🔧 [수정 포인트 4] 프로젝트 데이터
@@ -1538,7 +1542,7 @@
                             {projectsData.map((project, index) => (
                                 <div 
                                     key={project.id} 
-                                    className={`project-item ${sizePattern[index % sizePattern.length]}`}
+                                    className={`project-item ${sizePattern[project.id % sizePattern.length]}`}
                                     onClick={() => handleProjectClick(project.id)}
                                 >
                                     <img src={project.thumbnail} alt={project.title} />
@@ -1612,7 +1616,7 @@
                             {filteredProjects.map((project, index) => (
                                 <div 
                                     key={project.id} 
-                                    className={`project-item ${sizePattern[index % sizePattern.length]}`}
+                                    className={`project-item ${sizePattern[project.id % sizePattern.length]}`}
                                     onClick={() => handleProjectClick(project.id)}
                                 >
                                     <img src={project.thumbnail} alt={project.title} />
