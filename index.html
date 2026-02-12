@@ -447,7 +447,16 @@
 
         @media (max-width: 768px) {
             .masonry-grid {
-                column-count: 1;
+                column-count: unset;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            /* 모바일에서 비율 통일 */
+            .project-item.wide,
+            .project-item.tall,
+            .project-item.square {
+                aspect-ratio: 4/3;
             }
         }
 
