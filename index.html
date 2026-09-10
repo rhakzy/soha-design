@@ -2575,6 +2575,18 @@
                     }
         ];
 
+        /* stores 가 있으면 기간을 지점들에서 다시 계산한다.
+           지점을 추가·삭제하면 카드 표기와 정렬 위치가 함께 따라간다. */
+        projectsData.forEach(p => {
+            if (p.stores && p.stores.length) {
+                const ys = p.stores.map(st => st.completedAt).filter(Boolean).sort();
+                if (ys.length) {
+                    p.firstAt = ys[0];
+                    p.completedAt = ys[ys.length - 1];
+                }
+            }
+        });
+
         /* ---------- 공통 헬퍼 ---------- */
         const yearOf  = p => String(p.completedAt).slice(0, 4);
         const monthOf = p => String(p.completedAt).length >= 7 ? parseInt(String(p.completedAt).slice(5, 7), 10) : null;
