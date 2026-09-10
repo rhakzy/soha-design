@@ -1277,6 +1277,163 @@
             background: var(--warm-gold);
             color: var(--pure-white);
         }
+        /* ============================================================
+           개편 추가 스타일 (2026-09-10)
+           ============================================================ */
+
+        /* --- 모바일 햄버거 --- */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            padding: 0.6rem;
+            cursor: pointer;
+            line-height: 0;
+        }
+        .nav-toggle span {
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: var(--deep-navy);
+            margin: 5px 0;
+            transition: transform 0.3s ease, opacity 0.2s ease;
+        }
+        .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+        .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+        .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+        .nav-links a[aria-current="page"] { color: var(--warm-gold); }
+
+        @media (max-width: 768px) {
+            .nav-toggle { display: block; }
+            .nav-links {
+                position: fixed;
+                top: 0; right: 0;
+                width: min(72vw, 300px);
+                height: 100vh;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0;
+                padding: 6rem 2rem 2rem;
+                background: var(--pure-white);
+                box-shadow: -10px 0 40px rgba(26, 35, 50, 0.12);
+                transform: translateX(100%);
+                transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+                margin-left: 0;
+            }
+            .nav-links.open { transform: translateX(0); }
+            .nav-links li { width: 100%; }
+            .nav-links a {
+                display: block;
+                width: 100%;
+                padding: 1.2rem 0;
+                font-size: 0.9rem;
+                border-bottom: 1px solid rgba(26, 35, 50, 0.08);
+            }
+            .nav-backdrop {
+                position: fixed; inset: 0;
+                background: rgba(26, 35, 50, 0.35);
+                z-index: 999;
+            }
+        }
+
+        /* --- 카드 메타 (모바일 상시 노출) --- */
+        .project-badge {
+            font-weight: 600;
+            color: var(--warm-gold);
+        }
+        .project-meta-line {
+            font-size: 0.68rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--warm-gold);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .project-overlay {
+                opacity: 1;
+                background: linear-gradient(to top, rgba(26, 35, 50, 0.88) 0%, rgba(26, 35, 50, 0) 55%);
+                padding: 1.2rem;
+            }
+            .project-name { font-size: 1.15rem; }
+        }
+
+        /* --- 0건 필터 비활성 --- */
+        .filter-btn:disabled {
+            opacity: 0.18;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* --- 다점포 상세 --- */
+        .store-section { margin-bottom: 5rem; }
+        .store-head {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+            padding-bottom: 0.9rem;
+            border-bottom: 1px solid rgba(26, 35, 50, 0.1);
+        }
+        .store-name {
+            font-size: 1.25rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        .store-year {
+            font-size: 0.75rem;
+            letter-spacing: 0.18em;
+            color: var(--soft-sage);
+            font-weight: 400;
+        }
+        .store-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.2rem;
+        }
+        .store-grid .store-photo {
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            cursor: pointer;
+            background: rgba(26, 35, 50, 0.04);
+        }
+        .store-grid .store-photo img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .store-grid .store-photo:hover img { transform: scale(1.04); }
+
+        @media (max-width: 1199px) {
+            .store-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .store-grid { grid-template-columns: 1fr; gap: 1rem; }
+            .store-head { flex-direction: column; gap: 0.3rem; }
+        }
+
+        /* --- 빈 결과 --- */
+        .empty-state {
+            padding: 5rem 0;
+            font-size: 0.9rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            opacity: 0.55;
+        }
+
+        /* --- 모션 최소화 --- */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1285,265 +1442,1201 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        /* ============================================================
-           🔧 [수정 포인트 3] 이미지 비율 패턴
-           프로젝트 카드의 비율을 결정합니다. 이 순서대로 반복됩니다.
-           
-           - 'wide': 가로 이미지 (4:3)
-           - 'tall': 세로 이미지 (3:4)
-           - 'square': 정사각형 (1:1)
-           ============================================================ */
+        /* 카드 비율 패턴 — id 기준이므로 프로젝트를 추가해도 기존 카드 비율이 바뀌지 않는다 */
         const sizePattern = ['wide', 'tall', 'wide', 'square', 'wide', 'square', 'wide', 'tall'];
 
         /* ============================================================
-           🔧 [수정 포인트 4] 프로젝트 데이터
-           
-           새 프로젝트를 추가하려면 아래 형식으로 추가하세요:
-           
-           {
-               id: 번호,              // 고유 번호 (중복 안 됨)
-               title: "프로젝트명",    // 영어로 작성
-               category: "카테고리값", // residential, commercial, office, cafe, exterior 중 선택
-               categoryName: "표시명", // 화면에 표시될 카테고리 이름
-               thumbnail: "썸네일 경로",
-               images: ["상세이미지1", "상세이미지2", ...]
-                    { src: "이미지경로", caption: "코멘트" }, // 코멘트 있을 시
-                    "images/commercial/converse_3.webp", // 코멘트 없을 시 (이미지만)
-           }
-           
-           카테고리 종류:
-           - residential (RESIDENTIAL) : 주거
-           - commercial (COMMERCIAL) : 상업
-           - office (OFFICE) : 오피스
-           - cafe (CAFE & RESTAURANT) : 카페/레스토랑
-           - exterior (EXTERIOR) : 외관
+           프로젝트 데이터
+             type       "built"(시공) | "3d"(렌더링)
+             category   필터 분류: residential | office | cafe | photo | commercial
+                        ※ commercial 은 나머지 넷에 들어가지 않는 상업공간만
+             industry   카드 표시용 실제 업종
+             completedAt "YYYY" 또는 "YYYY-MM"
+             stores     있으면 다점포 레이아웃이 자동 적용된다
            ============================================================ */
-        // Project data
         const projectsData = [
-            {
-                id: 1,
-                title: "CONVERSE POP-UP STORE",
-                category: "commercial",
-                categoryName: "POP-UP STORE",
-                thumbnail: "images/commercial/converse_1.webp",
-                images: [
-                    { src: "images/commercial/converse_1.webp", caption: "Man Cave" },
-                    { src: "images/commercial/converse_2.webp", caption: "Practice Space" },
-                    { src: "images/commercial/converse_3.webp", caption: "Studio" },
-                    { src: "images/commercial/converse_4.webp", caption: "Custom Space" },
-                    { src: "images/commercial/converse_5.webp", caption: "Music Studio" }
-                ]
-            },
-            {
-                id: 2,
-                title: "OKKI IZAKAYA",
-                category: "cafe",
-                categoryName: "IZAKAYA",
-                thumbnail: "images/cafe_restaurant/okki2309_1.webp",
-                images: [
-                    { src: "images/cafe_restaurant/okki2309_1.webp", caption: "1F Hall" },
-                    { src: "images/cafe_restaurant/okki2309_2.webp", caption: "1F Bar" },
-                    { src: "images/cafe_restaurant/okki2309_3.webp", caption: "1F Main Hall" },
-                    { src: "images/cafe_restaurant/okki2309_4.webp", caption: "1F Main Hall" },
-                    { src: "images/cafe_restaurant/okki2309_5.webp", caption: "1F Gacha" },
-                    { src: "images/cafe_restaurant/okki2309_6.webp", caption: "2F" },
-                    { src: "images/cafe_restaurant/okki2309_7.webp", caption: "2F Hall" },
-                    { src: "images/cafe_restaurant/okki2309_8.webp", caption: "Exterior Coloring" }
-                ]
-            },
-            {
-                id: 3,
-                title: "PORTANA PIZZA",
-                category: "cafe",
-                categoryName: "PIZZA",
-                thumbnail: "images/cafe_restaurant/portana1.webp",
-                images: [
-                    { src: "images/cafe_restaurant/portana1.webp", caption: "" },
-                    { src: "images/cafe_restaurant/portana2.webp", caption: "" },
-                    { src: "images/cafe_restaurant/portana3.webp", caption: "" }
-                ]
-            },
-            {
-                id: 4,
-                title: "PHYSIO FITNESS",
-                category: "commercial",
-                categoryName: "FITNESS",
-                thumbnail: "images/commercial/fitness1.webp",
-                images: [
-                    { src: "images/commercial/fitness1.webp", caption: "Exterior" },
-                    { src: "images/commercial/fitness2.webp", caption: "Main Hall" },
-                    { src: "images/commercial/fitness3.webp", caption: "Entrance" },
-                    { src: "images/commercial/fitness4.webp", caption: "Pilates" },
-                    { src: "images/commercial/fitness5.webp", caption: "Locker Room" }
-                ]
-            },
-            {
-                id: 5,
-                title: "SAMSUNG OFFICE",
-                category: "office",
-                categoryName: "OFFICE",
-                thumbnail: "images/office/samsung_office_2.webp",
-                images: [
-                    { src: "images/office/samsung_office_1.webp", caption: "4F" },
-                    { src: "images/office/samsung_office_2.webp", caption: "4F" },
-                    { src: "images/office/samsung_office_3.webp", caption: "4F" },
-                    { src: "images/office/samsung_office_4.webp", caption: "5F" },
-                    { src: "images/office/samsung_office_5.webp", caption: "5F" },
-                    { src: "images/office/samsung_office_6.webp", caption: "5F" },
-                    { src: "images/office/samsung_office_7.webp", caption: "5F" }
-                ]
-            },
-            {
-                id: 6,
-                title: "ALKO SQUARE 1",
-                category: "exterior",
-                categoryName: "EXTERIOR",
-                thumbnail: "images/exterior/saamsung_exterior.webp",
-                images: [
-                    { src: "images/exterior/saamsung_exterior.webp", caption: "Exterior" },
-                    { src: "images/exterior/samsung_evhall1_2.webp", caption: "Elevator Hall" },
-                    { src: "images/exterior/samsung_evhall2_3.webp", caption: "Elevator Hall" }
-                ]
-            },
-            {
-                id: 7,
-                title: "JEJU TOWN HOUSE",
-                category: "residential",
-                categoryName: "RESIDENTIAL",
-                thumbnail: "images/residential/jeju_9.webp",
-                images: [
-                    { src: "images/residential/jeju_2.webp", caption: "1F Isometric View" },
-                    { src: "images/residential/jeju_1.webp", caption: "Living Room" },
-                    { src: "images/residential/jeju_3.webp", caption: "Living Room" },
-                    { src: "images/residential/jeju_4.webp", caption: "Corridor" },
-                    { src: "images/residential/jeju_5.webp", caption: "Bed Room" },
-                    { src: "images/residential/jeju_6.webp", caption: "2F Isometric View" },
-                    { src: "images/residential/jeju_7.webp", caption: "Corridor" },
-                    { src: "images/residential/jeju_8.webp", caption: "Stairs" },
-                    { src: "images/residential/jeju_9.webp", caption: "Bed Room" },
-                    { src: "images/residential/jeju_10.webp", caption: "Guest Room" },
-                    { src: "images/residential/jeju_11.webp", caption: "Bath Room" },
-                    { src: "images/residential/jeju_12.webp", caption: "Bath Room" }
-                ]
-            },
-            {
-                id: 8,
-                title: "STEAK HOUSE",
-                category: "cafe",
-                categoryName: "RESTAURANT",
-                thumbnail: "images/cafe_restaurant/steak_4.webp",
-                images: [
-                    { src: "images/cafe_restaurant/steak_1.webp", caption: "Corridor" },
-                    { src: "images/cafe_restaurant/steak_2.webp", caption: "Dinning Hall" },
-                    { src: "images/cafe_restaurant/steak_3.webp", caption: "Dinning Hall" },
-                    { src: "images/cafe_restaurant/steak_4.webp", caption: "Dinning Hall" },
-                    { src: "images/cafe_restaurant/steak_5.webp", caption: "Bar" },
-                    { src: "images/cafe_restaurant/steak_6.webp", caption: "Omakase" },
-                    { src: "images/cafe_restaurant/steak_7.webp", caption: "Corridor" },
-                    { src: "images/cafe_restaurant/steak_8.webp", caption: "Private Room (Korean Style)" },
-                    { src: "images/cafe_restaurant/steak_9.webp", caption: "Private Room" },
-                    { src: "images/cafe_restaurant/steak_10.webp", caption: "Private Room" }
-                ]
-            }
+                    {
+                                "id": 1,
+                                "title": "CONVERSE POP-UP STORE",
+                                "category": "commercial",
+                                "industry": "POP-UP STORE",
+                                "thumbnail": "images/commercial/converse_1.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/commercial/converse_1.webp",
+                                                        "caption": "Man Cave"
+                                            },
+                                            {
+                                                        "src": "images/commercial/converse_2.webp",
+                                                        "caption": "Practice Space"
+                                            },
+                                            {
+                                                        "src": "images/commercial/converse_3.webp",
+                                                        "caption": "Studio"
+                                            },
+                                            {
+                                                        "src": "images/commercial/converse_4.webp",
+                                                        "caption": "Custom Space"
+                                            },
+                                            {
+                                                        "src": "images/commercial/converse_5.webp",
+                                                        "caption": "Music Studio"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2022",
+                                "brandId": "converse"
+                    },
+                    {
+                                "id": 2,
+                                "title": "OKKI IZAKAYA",
+                                "category": "cafe",
+                                "industry": "IZAKAYA",
+                                "thumbnail": "images/cafe_restaurant/okki2309_1.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_1.webp",
+                                                        "caption": "1F Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_2.webp",
+                                                        "caption": "1F Bar"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_3.webp",
+                                                        "caption": "1F Main Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_4.webp",
+                                                        "caption": "1F Main Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_5.webp",
+                                                        "caption": "1F Gacha"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_6.webp",
+                                                        "caption": "2F"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_7.webp",
+                                                        "caption": "2F Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/okki2309_8.webp",
+                                                        "caption": "Exterior Coloring"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2023",
+                                "brandId": "okki-3d"
+                    },
+                    {
+                                "id": 3,
+                                "title": "PORTANA PIZZA",
+                                "category": "cafe",
+                                "industry": "PIZZA",
+                                "thumbnail": "images/cafe_restaurant/portana1.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/cafe_restaurant/portana1.webp",
+                                                        "caption": ""
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/portana2.webp",
+                                                        "caption": ""
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/portana3.webp",
+                                                        "caption": ""
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2024",
+                                "brandId": "portana-3d"
+                    },
+                    {
+                                "id": 4,
+                                "title": "PHYSIO FITNESS",
+                                "category": "commercial",
+                                "industry": "FITNESS",
+                                "thumbnail": "images/commercial/fitness1.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/commercial/fitness1.webp",
+                                                        "caption": "Exterior"
+                                            },
+                                            {
+                                                        "src": "images/commercial/fitness2.webp",
+                                                        "caption": "Main Hall"
+                                            },
+                                            {
+                                                        "src": "images/commercial/fitness3.webp",
+                                                        "caption": "Entrance"
+                                            },
+                                            {
+                                                        "src": "images/commercial/fitness4.webp",
+                                                        "caption": "Pilates"
+                                            },
+                                            {
+                                                        "src": "images/commercial/fitness5.webp",
+                                                        "caption": "Locker Room"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2025",
+                                "brandId": "physio"
+                    },
+                    {
+                                "id": 5,
+                                "title": "SAMSUNG OFFICE",
+                                "category": "office",
+                                "industry": "OFFICE",
+                                "thumbnail": "images/office/samsung_office_2.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/office/samsung_office_1.webp",
+                                                        "caption": "4F"
+                                            },
+                                            {
+                                                        "src": "images/office/samsung_office_2.webp",
+                                                        "caption": "4F"
+                                            },
+                                            {
+                                                        "src": "images/office/samsung_office_3.webp",
+                                                        "caption": "4F"
+                                            },
+                                            {
+                                                        "src": "images/office/samsung_office_4.webp",
+                                                        "caption": "5F"
+                                            },
+                                            {
+                                                        "src": "images/office/samsung_office_5.webp",
+                                                        "caption": "5F"
+                                            },
+                                            {
+                                                        "src": "images/office/samsung_office_6.webp",
+                                                        "caption": "5F"
+                                            },
+                                            {
+                                                        "src": "images/office/samsung_office_7.webp",
+                                                        "caption": "5F"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2025",
+                                "brandId": "samsung-office"
+                    },
+                    {
+                                "id": 6,
+                                "title": "ALKO SQUARE 1",
+                                "category": "office",
+                                "industry": "OFFICE BUILDING",
+                                "thumbnail": "images/exterior/saamsung_exterior.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/exterior/saamsung_exterior.webp",
+                                                        "caption": "Exterior"
+                                            },
+                                            {
+                                                        "src": "images/exterior/samsung_evhall1_2.webp",
+                                                        "caption": "Elevator Hall"
+                                            },
+                                            {
+                                                        "src": "images/exterior/samsung_evhall2_3.webp",
+                                                        "caption": "Elevator Hall"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2025",
+                                "brandId": "alko"
+                    },
+                    {
+                                "id": 7,
+                                "title": "JEJU TOWN HOUSE",
+                                "category": "residential",
+                                "industry": "RESIDENTIAL",
+                                "thumbnail": "images/residential/jeju_9.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/residential/jeju_2.webp",
+                                                        "caption": "1F Isometric View"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_1.webp",
+                                                        "caption": "Living Room"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_3.webp",
+                                                        "caption": "Living Room"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_4.webp",
+                                                        "caption": "Corridor"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_5.webp",
+                                                        "caption": "Bed Room"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_6.webp",
+                                                        "caption": "2F Isometric View"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_7.webp",
+                                                        "caption": "Corridor"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_8.webp",
+                                                        "caption": "Stairs"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_9.webp",
+                                                        "caption": "Bed Room"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_10.webp",
+                                                        "caption": "Guest Room"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_11.webp",
+                                                        "caption": "Bath Room"
+                                            },
+                                            {
+                                                        "src": "images/residential/jeju_12.webp",
+                                                        "caption": "Bath Room"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2025",
+                                "brandId": "jeju"
+                    },
+                    {
+                                "id": 8,
+                                "title": "STEAK HOUSE",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "thumbnail": "images/cafe_restaurant/steak_4.webp",
+                                "images": [
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_1.webp",
+                                                        "caption": "Corridor"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_2.webp",
+                                                        "caption": "Dinning Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_3.webp",
+                                                        "caption": "Dinning Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_4.webp",
+                                                        "caption": "Dinning Hall"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_5.webp",
+                                                        "caption": "Bar"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_6.webp",
+                                                        "caption": "Omakase"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_7.webp",
+                                                        "caption": "Corridor"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_8.webp",
+                                                        "caption": "Private Room (Korean Style)"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_9.webp",
+                                                        "caption": "Private Room"
+                                            },
+                                            {
+                                                        "src": "images/cafe_restaurant/steak_10.webp",
+                                                        "caption": "Private Room"
+                                            }
+                                ],
+                                "type": "3d",
+                                "completedAt": "2025",
+                                "brandId": "steak"
+                    },
+                    {
+                                "id": 9,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "jangjakkkun",
+                                "title": "장작꾼",
+                                "completedAt": "2026",
+                                "firstAt": "2026",
+                                "thumbnail": "images/built/2026/jangjakkkun_eungam_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "응암",
+                                                        "completedAt": "2026",
+                                                        "images": [
+                                                                    "images/built/2026/jangjakkkun_eungam_1.webp",
+                                                                    "images/built/2026/jangjakkkun_eungam_2.webp",
+                                                                    "images/built/2026/jangjakkkun_eungam_3.webp",
+                                                                    "images/built/2026/jangjakkkun_eungam_4.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "연신내",
+                                                        "completedAt": "2026",
+                                                        "images": [
+                                                                    "images/built/2026/jangjakkkun_yeonsinnae_1.webp",
+                                                                    "images/built/2026/jangjakkkun_yeonsinnae_2.webp",
+                                                                    "images/built/2026/jangjakkkun_yeonsinnae_3.webp",
+                                                                    "images/built/2026/jangjakkkun_yeonsinnae_4.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "역촌역",
+                                                        "completedAt": "2026",
+                                                        "images": [
+                                                                    "images/built/2026/jangjakkkun_yeochon_1.webp",
+                                                                    "images/built/2026/jangjakkkun_yeochon_2.webp",
+                                                                    "images/built/2026/jangjakkkun_yeochon_3.webp",
+                                                                    "images/built/2026/jangjakkkun_yeochon_4.webp",
+                                                                    "images/built/2026/jangjakkkun_yeochon_5.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 10,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "hanwoo88",
+                                "title": "한우88",
+                                "completedAt": "2025",
+                                "firstAt": "2025",
+                                "thumbnail": "images/built/2025/hanwoo88_eungam_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "응암점",
+                                                        "completedAt": "2025",
+                                                        "images": [
+                                                                    "images/built/2025/hanwoo88_eungam_1.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 11,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "danmak",
+                                "title": "단막",
+                                "completedAt": "2025",
+                                "firstAt": "2025",
+                                "thumbnail": "images/built/2025/danmak_dongtan_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "동탄",
+                                                        "completedAt": "2025",
+                                                        "images": [
+                                                                    "images/built/2025/danmak_dongtan_1.webp",
+                                                                    "images/built/2025/danmak_dongtan_2.webp",
+                                                                    "images/built/2025/danmak_dongtan_3.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 12,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "netgiri",
+                                "title": "넷길이 콩나물국밥",
+                                "completedAt": "2025",
+                                "firstAt": "2025",
+                                "thumbnail": "images/built/2025/netgili_yeonsinne_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "연신내",
+                                                        "completedAt": "2025",
+                                                        "images": [
+                                                                    "images/built/2025/netgili_yeonsinne_1.webp",
+                                                                    "images/built/2025/netgili_yeonsinne_2.webp",
+                                                                    "images/built/2025/netgili_yeonsinne_3.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 13,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "IZAKAYA",
+                                "brandId": "okki",
+                                "title": "오끼",
+                                "completedAt": "2024",
+                                "firstAt": "2023",
+                                "thumbnail": "images/built/2024/okki_yeonsinne_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "연신내",
+                                                        "completedAt": "2024",
+                                                        "images": [
+                                                                    "images/built/2024/okki_yeonsinne_1.webp",
+                                                                    "images/built/2024/okki_yeonsinne_2.webp",
+                                                                    "images/built/2024/okki_yeonsinne_3.webp",
+                                                                    "images/built/2024/okki_yeonsinne_4.webp",
+                                                                    "images/built/2024/okki_yeonsinne_5.webp",
+                                                                    "images/built/2024/okki_yeonsinne_6.webp",
+                                                                    "images/built/2024/okki_yeonsinne_7.webp",
+                                                                    "images/built/2024/okki_yeonsinne_8.webp",
+                                                                    "images/built/2024/okki_yeonsinne_9.webp",
+                                                                    "images/built/2024/okki_yeonsinne_10.webp",
+                                                                    "images/built/2024/okki_yeonsinne_11.webp",
+                                                                    "images/built/2024/okki_yeonsinne_12.webp",
+                                                                    "images/built/2024/okki_yeonsinne_13.webp",
+                                                                    "images/built/2024/okki_yeonsinne_14.webp",
+                                                                    "images/built/2024/okki_yeonsinne_15.webp",
+                                                                    "images/built/2024/okki_yeonsinne_16.webp",
+                                                                    "images/built/2024/okki_yeonsinne_17.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "안산 중앙",
+                                                        "completedAt": "2024",
+                                                        "images": [
+                                                                    "images/built/2024/okki_ansan_1.webp",
+                                                                    "images/built/2024/okki_ansan_2.webp",
+                                                                    "images/built/2024/okki_ansan_3.webp",
+                                                                    "images/built/2024/okki_ansan_4.webp",
+                                                                    "images/built/2024/okki_ansan_5.webp",
+                                                                    "images/built/2024/okki_ansan_6.webp",
+                                                                    "images/built/2024/okki_ansan_7.webp",
+                                                                    "images/built/2024/okki_ansan_8.webp",
+                                                                    "images/built/2024/okki_ansan_9.webp",
+                                                                    "images/built/2024/okki_ansan_10.webp",
+                                                                    "images/built/2024/okki_ansan_11.webp",
+                                                                    "images/built/2024/okki_ansan_12.webp",
+                                                                    "images/built/2024/okki_ansan_13.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "하남",
+                                                        "completedAt": "2023",
+                                                        "images": [
+                                                                    "images/built/2023/okki_hanam_1.webp",
+                                                                    "images/built/2023/okki_hanam_2.webp",
+                                                                    "images/built/2023/okki_hanam_3.webp",
+                                                                    "images/built/2023/okki_hanam_4.webp",
+                                                                    "images/built/2023/okki_hanam_5.webp",
+                                                                    "images/built/2023/okki_hanam_6.webp",
+                                                                    "images/built/2023/okki_hanam_7.webp",
+                                                                    "images/built/2023/okki_hanam_8.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "의정부",
+                                                        "completedAt": "2023",
+                                                        "images": [
+                                                                    "images/built/2023/okki_uijeongbu_1.webp",
+                                                                    "images/built/2023/okki_uijeongbu_2.webp",
+                                                                    "images/built/2023/okki_uijeongbu_3.webp",
+                                                                    "images/built/2023/okki_uijeongbu_4.webp",
+                                                                    "images/built/2023/okki_uijeongbu_5.webp",
+                                                                    "images/built/2023/okki_uijeongbu_6.webp",
+                                                                    "images/built/2023/okki_uijeongbu_7.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "수원",
+                                                        "completedAt": "2023",
+                                                        "images": [
+                                                                    "images/built/2023/okki_suwon_1.webp",
+                                                                    "images/built/2023/okki_suwon_2.webp",
+                                                                    "images/built/2023/okki_suwon_3.webp",
+                                                                    "images/built/2023/okki_suwon_4.webp",
+                                                                    "images/built/2023/okki_suwon_5.webp",
+                                                                    "images/built/2023/okki_suwon_6.webp",
+                                                                    "images/built/2023/okki_suwon_7.webp",
+                                                                    "images/built/2023/okki_suwon_8.webp",
+                                                                    "images/built/2023/okki_suwon_9.webp",
+                                                                    "images/built/2023/okki_suwon_10.webp",
+                                                                    "images/built/2023/okki_suwon_11.webp",
+                                                                    "images/built/2023/okki_suwon_12.webp",
+                                                                    "images/built/2023/okki_suwon_13.webp",
+                                                                    "images/built/2023/okki_suwon_14.webp",
+                                                                    "images/built/2023/okki_suwon_15.webp",
+                                                                    "images/built/2023/okki_suwon_16.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "미아",
+                                                        "completedAt": "2023",
+                                                        "images": [
+                                                                    "images/built/2023/okki_mia_1.webp",
+                                                                    "images/built/2023/okki_mia_2.webp",
+                                                                    "images/built/2023/okki_mia_3.webp",
+                                                                    "images/built/2023/okki_mia_4.webp",
+                                                                    "images/built/2023/okki_mia_5.webp",
+                                                                    "images/built/2023/okki_mia_6.webp",
+                                                                    "images/built/2023/okki_mia_7.webp",
+                                                                    "images/built/2023/okki_mia_8.webp",
+                                                                    "images/built/2023/okki_mia_9.webp",
+                                                                    "images/built/2023/okki_mia_10.webp",
+                                                                    "images/built/2023/okki_mia_11.webp",
+                                                                    "images/built/2023/okki_mia_12.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 14,
+                                "type": "built",
+                                "category": "photo",
+                                "industry": "PHOTO STUDIO",
+                                "brandId": "shotup",
+                                "title": "샷업",
+                                "completedAt": "2024",
+                                "firstAt": "2024",
+                                "thumbnail": "images/built/2024/shotup_hyehwa_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "혜화",
+                                                        "completedAt": "2024",
+                                                        "images": [
+                                                                    "images/built/2024/shotup_hyehwa_1.webp",
+                                                                    "images/built/2024/shotup_hyehwa_2.webp",
+                                                                    "images/built/2024/shotup_hyehwa_3.webp",
+                                                                    "images/built/2024/shotup_hyehwa_4.webp",
+                                                                    "images/built/2024/shotup_hyehwa_5.webp",
+                                                                    "images/built/2024/shotup_hyehwa_6.webp",
+                                                                    "images/built/2024/shotup_hyehwa_7.webp",
+                                                                    "images/built/2024/shotup_hyehwa_8.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 15,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "portana",
+                                "title": "포르타나 피자",
+                                "completedAt": "2023",
+                                "firstAt": "2023",
+                                "thumbnail": "images/built/2023/portana_suwon_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "수원",
+                                                        "completedAt": "2023",
+                                                        "images": [
+                                                                    "images/built/2023/portana_suwon_1.webp",
+                                                                    "images/built/2023/portana_suwon_2.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 16,
+                                "type": "built",
+                                "category": "photo",
+                                "industry": "PHOTO STUDIO",
+                                "brandId": "photogray",
+                                "title": "포토그레이",
+                                "completedAt": "2022",
+                                "firstAt": "2021",
+                                "thumbnail": "images/built/2022/photogray_uijeongbu_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "의정부",
+                                                        "completedAt": "2022",
+                                                        "images": [
+                                                                    "images/built/2022/photogray_uijeongbu_1.webp",
+                                                                    "images/built/2022/photogray_uijeongbu_2.webp",
+                                                                    "images/built/2022/photogray_uijeongbu_3.webp",
+                                                                    "images/built/2022/photogray_uijeongbu_4.webp",
+                                                                    "images/built/2022/photogray_uijeongbu_5.webp",
+                                                                    "images/built/2022/photogray_uijeongbu_6.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "홍대",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_hongdae_1.webp",
+                                                                    "images/built/2021/photogray_hongdae_2.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "천안",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_cheonan_1.webp",
+                                                                    "images/built/2021/photogray_cheonan_2.webp",
+                                                                    "images/built/2021/photogray_cheonan_3.webp",
+                                                                    "images/built/2021/photogray_cheonan_4.webp",
+                                                                    "images/built/2021/photogray_cheonan_5.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "안양",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_anyang_1.webp",
+                                                                    "images/built/2021/photogray_anyang_2.webp",
+                                                                    "images/built/2021/photogray_anyang_3.webp",
+                                                                    "images/built/2021/photogray_anyang_4.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "수원",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_suwon_1.webp",
+                                                                    "images/built/2021/photogray_suwon_2.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "대학로",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_daehakro_1.webp",
+                                                                    "images/built/2021/photogray_daehakro_2.webp",
+                                                                    "images/built/2021/photogray_daehakro_3.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "대전",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_daejeon_1.webp",
+                                                                    "images/built/2021/photogray_daejeon_2.webp",
+                                                                    "images/built/2021/photogray_daejeon_3.webp",
+                                                                    "images/built/2021/photogray_daejeon_4.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "대구 동성로",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_daegu_1.webp",
+                                                                    "images/built/2021/photogray_daegu_2.webp",
+                                                                    "images/built/2021/photogray_daegu_3.webp",
+                                                                    "images/built/2021/photogray_daegu_4.webp",
+                                                                    "images/built/2021/photogray_daegu_5.webp",
+                                                                    "images/built/2021/photogray_daegu_6.webp",
+                                                                    "images/built/2021/photogray_daegu_7.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "광주",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/photogray_gwangju_1.webp",
+                                                                    "images/built/2021/photogray_gwangju_2.webp",
+                                                                    "images/built/2021/photogray_gwangju_3.webp",
+                                                                    "images/built/2021/photogray_gwangju_4.webp",
+                                                                    "images/built/2021/photogray_gwangju_5.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 17,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "ojaljeon",
+                                "title": "오잘전맥집",
+                                "completedAt": "2022",
+                                "firstAt": "2022",
+                                "thumbnail": "images/built/2022/ojal_seomyeon_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "부산 서면",
+                                                        "completedAt": "2022",
+                                                        "images": [
+                                                                    "images/built/2022/ojal_seomyeon_1.webp",
+                                                                    "images/built/2022/ojal_seomyeon_2.webp",
+                                                                    "images/built/2022/ojal_seomyeon_3.webp",
+                                                                    "images/built/2022/ojal_seomyeon_4.webp",
+                                                                    "images/built/2022/ojal_seomyeon_5.webp",
+                                                                    "images/built/2022/ojal_seomyeon_6.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 18,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "nopo",
+                                "title": "노포식당 2호점",
+                                "completedAt": "2021",
+                                "firstAt": "2021",
+                                "thumbnail": "images/built/2021/nopo_wirye_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "위례",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/nopo_wirye_1.webp",
+                                                                    "images/built/2021/nopo_wirye_2.webp",
+                                                                    "images/built/2021/nopo_wirye_3.webp",
+                                                                    "images/built/2021/nopo_wirye_4.webp",
+                                                                    "images/built/2021/nopo_wirye_5.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 19,
+                                "type": "built",
+                                "category": "office",
+                                "industry": "RESEARCH LAB",
+                                "brandId": "globalskin",
+                                "title": "글로벌피부과학연구원",
+                                "completedAt": "2021",
+                                "firstAt": "2021",
+                                "thumbnail": "images/built/2021/global_songpa_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "송파",
+                                                        "completedAt": "2021",
+                                                        "images": [
+                                                                    "images/built/2021/global_songpa_1.webp",
+                                                                    "images/built/2021/global_songpa_2.webp",
+                                                                    "images/built/2021/global_songpa_3.webp",
+                                                                    "images/built/2021/global_songpa_4.webp",
+                                                                    "images/built/2021/global_songpa_5.webp",
+                                                                    "images/built/2021/global_songpa_6.webp",
+                                                                    "images/built/2021/global_songpa_7.webp",
+                                                                    "images/built/2021/global_songpa_8.webp",
+                                                                    "images/built/2021/global_songpa_9.webp",
+                                                                    "images/built/2021/global_songpa_10.webp",
+                                                                    "images/built/2021/global_songpa_11.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 20,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "RESTAURANT",
+                                "brandId": "gopkkaebi",
+                                "title": "곱깨비",
+                                "completedAt": "2020",
+                                "firstAt": "2020",
+                                "thumbnail": "images/built/2020/gopkkebi_bongcheon_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "봉천",
+                                                        "completedAt": "2020",
+                                                        "images": [
+                                                                    "images/built/2020/gopkkebi_bongcheon_1.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "당진",
+                                                        "completedAt": "2020",
+                                                        "images": [
+                                                                    "images/built/2020/gopkkebi_dangjin_1.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 21,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "CAFE",
+                                "brandId": "pandorothy",
+                                "title": "팬도로시",
+                                "completedAt": "2019",
+                                "firstAt": "2019",
+                                "thumbnail": "images/built/2019/pandorosi_korea_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "고려대점",
+                                                        "completedAt": "2019",
+                                                        "images": [
+                                                                    "images/built/2019/pandorosi_korea_1.webp",
+                                                                    "images/built/2019/pandorosi_korea_2.webp",
+                                                                    "images/built/2019/pandorosi_korea_3.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 22,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "IZAKAYA",
+                                "brandId": "cheongdam",
+                                "title": "청담이상",
+                                "completedAt": "2019",
+                                "firstAt": "2016",
+                                "thumbnail": "images/built/2019/cheongdam_mokdong_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "목동점",
+                                                        "completedAt": "2019",
+                                                        "images": [
+                                                                    "images/built/2019/cheongdam_mokdong_1.webp",
+                                                                    "images/built/2019/cheongdam_mokdong_2.webp",
+                                                                    "images/built/2019/cheongdam_mokdong_3.webp",
+                                                                    "images/built/2019/cheongdam_mokdong_4.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "마곡점",
+                                                        "completedAt": "2018",
+                                                        "images": [
+                                                                    "images/built/2018/cheongdam_magok_1.webp",
+                                                                    "images/built/2018/cheongdam_magok_2.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "포항1호점",
+                                                        "completedAt": "2016",
+                                                        "images": [
+                                                                    "images/built/2016/cheongdam_pohang_1.webp",
+                                                                    "images/built/2016/cheongdam_pohang_2.webp",
+                                                                    "images/built/2016/cheongdam_pohang_3.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "청주 복대점",
+                                                        "completedAt": "2016",
+                                                        "images": [
+                                                                    "images/built/2016/cheongdam_cheongju_1.webp",
+                                                                    "images/built/2016/cheongdam_cheongju_2.webp",
+                                                                    "images/built/2016/cheongdam_cheongju_3.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "의정부점",
+                                                        "completedAt": "2016",
+                                                        "images": [
+                                                                    "images/built/2016/cheongdam_uijeongbu_1.webp",
+                                                                    "images/built/2016/cheongdam_uijeongbu_2.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "원주 단계점",
+                                                        "completedAt": "2016",
+                                                        "images": [
+                                                                    "images/built/2016/cheongdam_wonju_1.webp",
+                                                                    "images/built/2016/cheongdam_wonju_2.webp",
+                                                                    "images/built/2016/cheongdam_wonju_3.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "부산 서면점",
+                                                        "completedAt": "2016",
+                                                        "images": [
+                                                                    "images/built/2016/cheongdam_busan_1.webp",
+                                                                    "images/built/2016/cheongdam_busan_2.webp",
+                                                                    "images/built/2016/cheongdam_busan_3.webp"
+                                                        ]
+                                            },
+                                            {
+                                                        "name": "대구점",
+                                                        "completedAt": "2016",
+                                                        "images": [
+                                                                    "images/built/2016/cheongdam_daegu_1.webp",
+                                                                    "images/built/2016/cheongdam_daegu_2.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 23,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "CAFETERIA",
+                                "brandId": "swu",
+                                "title": "서울여대 구시아",
+                                "completedAt": "2019",
+                                "firstAt": "2019",
+                                "thumbnail": "images/built/2019/swu_gusia_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "서울여대 구시아",
+                                                        "completedAt": "2019",
+                                                        "images": [
+                                                                    "images/built/2019/swu_gusia_1.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 24,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "BAR",
+                                "brandId": "byeolba",
+                                "title": "별바",
+                                "completedAt": "2019",
+                                "firstAt": "2019",
+                                "thumbnail": "images/built/2019/byeolba_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "별바",
+                                                        "completedAt": "2019",
+                                                        "images": [
+                                                                    "images/built/2019/byeolba_1.webp"
+                                                        ]
+                                            }
+                                ]
+                    },
+                    {
+                                "id": 25,
+                                "type": "built",
+                                "category": "cafe",
+                                "industry": "CAFE",
+                                "brandId": "loxid",
+                                "title": "LOXID GATEAU",
+                                "completedAt": "2018",
+                                "firstAt": "2018",
+                                "thumbnail": "images/built/2018/loxid_gateau_1.webp",
+                                "stores": [
+                                            {
+                                                        "name": "LOXID GATEAU",
+                                                        "completedAt": "2018",
+                                                        "images": [
+                                                                    "images/built/2018/loxid_gateau_1.webp",
+                                                                    "images/built/2018/loxid_gateau_2.webp",
+                                                                    "images/built/2018/loxid_gateau_3.webp",
+                                                                    "images/built/2018/loxid_gateau_4.webp",
+                                                                    "images/built/2018/loxid_gateau_5.webp"
+                                                        ]
+                                            }
+                                ]
+                    }
         ];
 
-        // Navigation Component
-        function Navigation({ currentPage, setCurrentPage, setFilter }) {
-            const [scrolled, setScrolled] = useState(false);
+        /* ---------- 공통 헬퍼 ---------- */
+        const yearOf  = p => String(p.completedAt).slice(0, 4);
+        const monthOf = p => String(p.completedAt).length >= 7 ? parseInt(String(p.completedAt).slice(5, 7), 10) : null;
+        const fmtDate = v => { const s = String(v); return s.length >= 7 ? s.slice(2, 4) + '.' + s.slice(5, 7) : s; };
 
-            useEffect(() => {
-                const handleScroll = () => {
-                    setScrolled(window.scrollY > 50);
-                };
-                window.addEventListener('scroll', handleScroll);
-                return () => window.removeEventListener('scroll', handleScroll);
-            }, []);
+        /* 상세·라이트박스용으로 사진을 한 줄로 펼친다 (지점 경계 정보 유지) */
+        const flatImages = p => p.stores
+            ? p.stores.flatMap((st, si) => st.images.map(src => ({ src, store: st.name, si })))
+            : (p.images || []).map(im => typeof im === 'string' ? { src: im } : { src: im.src, caption: im.caption });
 
-            const handleCategoryClick = (category) => {
-                setCurrentPage('projects', null, category);
+        /* 정렬: 연도 내림차순 → 타입별로 월 내림차순(월 없음은 뒤) → id 오름차순 → 시공/3D 교차 */
+        function sortProjects(list) {
+            const rank = (a, b) => {
+                const ma = monthOf(a), mb = monthOf(b);
+                if (ma !== mb) { if (ma === null) return 1; if (mb === null) return -1; return mb - ma; }
+                return a.id - b.id;
             };
+            const years = [...new Set(list.map(yearOf))].sort().reverse();
+            return years.flatMap(y => {
+                const g = list.filter(p => yearOf(p) === y);
+                const built = g.filter(p => p.type === 'built').sort(rank);
+                const rend  = g.filter(p => p.type === '3d').sort(rank);
+                const out = [];
+                for (let i = 0; i < Math.max(built.length, rend.length); i++) {
+                    if (i < built.length) out.push(built[i]);
+                    if (i < rend.length)  out.push(rend[i]);
+                }
+                return out;
+            });
+        }
 
-            const handleProjectsClick = () => {
-                setCurrentPage('projects', null, 'all');
-            };
+        const FILTERS = [
+            { key: 'all',         label: 'All' },
+            { key: 'residential', label: 'Residential' },
+            { key: 'office',      label: 'Office' },
+            { key: 'cafe',        label: 'Cafe & Restaurant' },
+            { key: 'photo',       label: 'Photo Studio' },
+            { key: 'commercial',  label: 'Commercial' }
+        ];
+
+        const LIST_PAGES = ['home', 'interior', 'rendering'];
+
+        /* ---------- 카드 ---------- */
+        function ProjectCard({ project, onOpen }) {
+            const n = project.stores ? project.stores.length : 0;
+            const period = project.firstAt && project.firstAt !== project.completedAt
+                ? fmtDate(project.firstAt) + ' — ' + fmtDate(project.completedAt)
+                : fmtDate(project.completedAt);
+            const meta = [
+                project.type === '3d' ? '3D' : 'Built',
+                project.industry,
+                period
+            ].concat(n > 1 ? [n + ' Stores'] : []).join(' · ');
 
             return (
-                <nav className={scrolled ? 'scrolled' : ''}>
-                    {/* ============================================================
-                        🔧 [수정 포인트 5] 상단 로고 이미지
-                        logo.png 파일을 HTML과 같은 폴더에 넣으세요.
-                        파일이 없으면 자동으로 "SOHA DESIGN" 텍스트가 표시됩니다.
-                        ============================================================ */}
-                    <img 
-                        src="logo.png" 
-                        alt="SOHA DESIGN" 
-                        className="logo" 
-                        onClick={() => setCurrentPage('home')}
-                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
-                    />
-                    <div className="logo-text" onClick={() => setCurrentPage('home')} style={{display: 'none'}}>
-                        SOHA DESIGN
+                <div
+                    className={`project-item ${sizePattern[project.id % sizePattern.length]}`}
+                    onClick={() => onOpen(project.id)}
+                >
+                    <img src={project.thumbnail} alt={project.title} loading="lazy" />
+                    <div className="project-overlay">
+                        <div className="project-meta-line">{meta}</div>
+                        <div className="project-name">{project.title}</div>
                     </div>
-                    <ul className="nav-links">
-                        <li>
-                            <a onClick={handleProjectsClick}>Projects</a>
-                            <div className="dropdown-menu">
-                                <div className="dropdown-content">
-                                    <div className="dropdown-item" onClick={() => handleCategoryClick('residential')}>Residential</div>
-                                    <div className="dropdown-item" onClick={() => handleCategoryClick('commercial')}>Commercial</div>
-                                    <div className="dropdown-item" onClick={() => handleCategoryClick('office')}>Office</div>
-                                    <div className="dropdown-item" onClick={() => handleCategoryClick('cafe')}>Cafe & Restaurant</div>
-                                    <div className="dropdown-item" onClick={() => handleCategoryClick('exterior')}>Exterior</div>
-                                </div>
-                            </div>
-                        </li>
-                        <li><a onClick={() => setCurrentPage('about')}>About</a></li>
-                    </ul>
-                </nav>
+                </div>
             );
         }
 
-        // Home Page
-        function Home({ setCurrentPage, setSelectedProject }) {
-            const handleProjectClick = (projectId) => {
-                setSelectedProject(projectId);
-                setCurrentPage('projectDetail', projectId);
-            };
+        function Grid({ items, onOpen }) {
+            if (!items.length) {
+                return <div className="empty-state">표시할 프로젝트가 없습니다.</div>;
+            }
+            return (
+                <div className="masonry-grid">
+                    {items.map(p => <ProjectCard key={p.id} project={p} onOpen={onOpen} />)}
+                </div>
+            );
+        }
 
+        /* ---------- 필터 바 ---------- */
+        function FilterBar({ pool, filter, onChange }) {
+            return (
+                <div className="filter-container">
+                    {FILTERS.map(f => {
+                        const count = f.key === 'all' ? pool.length : pool.filter(p => p.category === f.key).length;
+                        return (
+                            <button
+                                key={f.key}
+                                className={`filter-btn ${filter === f.key ? 'active' : ''}`}
+                                onClick={() => onChange(f.key)}
+                                disabled={count === 0}
+                                aria-disabled={count === 0}
+                                title={count === 0 ? '해당 프로젝트 없음' : undefined}
+                            >
+                                {f.label}
+                            </button>
+                        );
+                    })}
+                </div>
+            );
+        }
+
+        /* ---------- 네비게이션 ---------- */
+        function Navigation({ currentPage, navigate }) {
+            const [scrolled, setScrolled] = useState(false);
+            const [open, setOpen] = useState(false);
+            const listRef = useRef(null);
+            const btnRef = useRef(null);
+            const wasOpen = useRef(false);
+
+            useEffect(() => {
+                const onScroll = () => setScrolled(window.scrollY > 50);
+                window.addEventListener('scroll', onScroll);
+                return () => window.removeEventListener('scroll', onScroll);
+            }, []);
+
+            /* 열림 상태: 배경 스크롤 잠금 + ESC + 첫 항목 초점 */
+            useEffect(() => {
+                if (!open) {
+                    document.body.style.overflow = '';
+                    /* 처음 렌더에서는 초점을 옮기지 않는다 — 닫을 때만 버튼으로 되돌린다 */
+                    if (wasOpen.current && btnRef.current) btnRef.current.focus();
+                    wasOpen.current = false;
+                    return;
+                }
+                wasOpen.current = true;
+                document.body.style.overflow = 'hidden';
+                /* inert 가 걸린 상태에서는 focus() 가 무시되므로 먼저 해제한다 */
+                if (listRef.current) listRef.current.removeAttribute('inert');
+                const first = listRef.current && listRef.current.querySelector('a');
+                if (first) first.focus();
+
+                const onKey = (e) => {
+                    if (e.key === 'Escape') { setOpen(false); return; }
+                    if (e.key !== 'Tab' || !listRef.current) return;
+                    const f = [...listRef.current.querySelectorAll('a')];
+                    if (!f.length) return;
+                    const first = f[0], last = f[f.length - 1];
+                    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+                    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+                };
+                window.addEventListener('keydown', onKey);
+                return () => window.removeEventListener('keydown', onKey);
+            }, [open]);
+
+            /* 닫혀 있을 때 모바일에서 초점이 들어가지 않도록 */
+            useEffect(() => {
+                const el = listRef.current;
+                if (!el) return;
+                const mobile = window.matchMedia('(max-width: 768px)').matches;
+                if (mobile && !open) el.setAttribute('inert', '');
+                else el.removeAttribute('inert');
+            }, [open]);
+
+            const go = (page) => { setOpen(false); navigate(page, null, 'all'); };
+            /* href 없는 <a> 는 탭 순서에 들어가지 않으므로 명시적으로 포커스 가능하게 만든다 */
+            const linkProps = (page) => ({
+                tabIndex: 0,
+                role: 'link',
+                onClick: () => go(page),
+                onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(page); } },
+                'aria-current': currentPage === page ? 'page' : undefined
+            });
+
+            return (
+                <>
+                    <nav className={scrolled ? 'scrolled' : ''}>
+                        <img
+                            src="logo.png"
+                            alt="SOHA DESIGN"
+                            className="logo"
+                            onClick={() => go('home')}
+                            onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'block'; }}
+                        />
+                        <div className="logo-text" onClick={() => go('home')} style={{ display: 'none' }}>
+                            SOHA DESIGN
+                        </div>
+
+                        <button
+                            ref={btnRef}
+                            className="nav-toggle"
+                            aria-expanded={open}
+                            aria-controls="primary-nav"
+                            aria-label={open ? '메뉴 닫기' : '메뉴 열기'}
+                            onClick={() => setOpen(v => !v)}
+                        >
+                            <span></span><span></span><span></span>
+                        </button>
+
+                        <ul id="primary-nav" className={`nav-links ${open ? 'open' : ''}`} ref={listRef}>
+                            <li><a {...linkProps('interior')}>Interior</a></li>
+                            <li><a {...linkProps('rendering')}>Rendering</a></li>
+                            <li><a {...linkProps('about')}>About</a></li>
+                        </ul>
+                    </nav>
+                    {open && <div className="nav-backdrop" onClick={() => setOpen(false)}></div>}
+                </>
+            );
+        }
+
+        /* ---------- 홈 ---------- */
+        function Home({ navigate }) {
+            const items = sortProjects(projectsData);
             return (
                 <>
                     <div className="hero">
                         <div className="hero-content">
-                            {/* ============================================================
-                                🔧 [수정 포인트 6] 히어로 로고 이미지
-                                hero-logo.png 파일을 HTML과 같은 폴더에 넣으세요.
-                                파일이 없으면 표시되지 않습니다.
-                                ============================================================ */}
-                            <img 
-                                src="hero-logo.png" 
-                                alt="SOHA DESIGN" 
-                                className="hero-logo"
-                                onError={(e) => { e.target.style.display = 'none'; }}
-                            />
-                            
-                            {/* ============================================================
-                                🔧 [수정 포인트 7] 메인 타이틀
-                                회사명을 변경하려면 아래 텍스트를 수정하세요.
-                                ============================================================ */}
-                            
-                            
-                            {/* ============================================================
-                                🔧 [수정 포인트 8] 서브타이틀
-                                ============================================================ */}
-                            <div className="hero-subtitle">Interior Design & Visualization</div>
-                            
-                            {/* ============================================================
-                                🔧 [수정 포인트 9] 메인 설명 문구
-                                ============================================================ */}
+                            <img src="hero-logo.png" alt="SOHA DESIGN" className="hero-logo"
+                                 onError={(e) => { e.target.style.display = 'none'; }} />
+                            <div className="hero-subtitle">Interior Design &amp; Build</div>
                             <p className="hero-description">
-                                We design the essence of space.<br/>
-                                Sophisticated, organic, and harmonious —<br/>
-                                that's the experience we create.
+                                We plan, visualize, and build interiors.<br/>
+                                Mostly commercial spaces — often one location,<br/>
+                                then another for the same brand.
                             </p>
                         </div>
                         <div className="scroll-indicator">
@@ -1552,297 +2645,202 @@
                         </div>
                     </div>
                     <div className="content-wrapper">
-                        <div className="masonry-grid">
-                            {projectsData.map((project, index) => (
-                                <div 
-                                    key={project.id} 
-                                    className={`project-item ${sizePattern[project.id % sizePattern.length]}`}
-                                    onClick={() => handleProjectClick(project.id)}
-                                >
-                                    <img src={project.thumbnail} alt={project.title} />
-                                    <div className="project-overlay">
-                                        <div className="project-category">{project.categoryName}</div>
-                                        <div className="project-name">{project.title}</div>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="projects-section" style={{ marginTop: '4rem' }}>
+                            <h1 className="section-title">All Works</h1>
+                            <Grid items={items} onOpen={(id) => navigate('projectDetail', id)} />
                         </div>
                     </div>
                 </>
             );
         }
 
-        // Projects Page
-        function Projects({ setCurrentPage, setSelectedProject, filter, setFilter }) {
-            const filteredProjects = filter === 'all' 
-                ? projectsData 
-                : projectsData.filter(p => p.category === filter);
+        /* ---------- 목록 (Interior / Rendering) ---------- */
+        function ProjectList({ page, filter, setFilter, navigate }) {
+            const isInterior = page === 'interior';
+            const pool = sortProjects(projectsData.filter(p => p.type === (isInterior ? 'built' : '3d')));
+            const items = filter === 'all' ? pool : pool.filter(p => p.category === filter);
 
-            const handleProjectClick = (projectId) => {
-                setSelectedProject(projectId);
-                setCurrentPage('projectDetail', projectId);
-            };
+            /* 0건 필터로 직접 진입하면 All 로 폴백하고 URL 도 정규화한다 */
+            useEffect(() => {
+                if (filter !== 'all' && pool.filter(p => p.category === filter).length === 0) {
+                    setFilter('all');
+                    window.history.replaceState(window.history.state, '', '#/' + page);
+                }
+            }, [filter, page]);
 
-            // 필터 변경 시 URL 해시도 갱신 (새로고침해도 유지)
-            const handleFilterChange = (newFilter) => {
-                setFilter(newFilter);
-                window.history.replaceState(null, '', newFilter !== 'all' ? `#/projects/${newFilter}` : '#/projects');
+            const onFilter = (key) => {
+                setFilter(key);
+                window.history.replaceState(window.history.state, '',
+                    key !== 'all' ? `#/${page}/${key}` : `#/${page}`);
             };
 
             return (
                 <div className="content-wrapper projects-page-wrapper">
                     <div className="projects-section">
-                        <h1 className="section-title">Projects</h1>
-                        <span className="section-subtitle">Selected Works</span>
-                        <div className="filter-container">
-                            <button 
-                                className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('all')}
-                            >
-                                All
-                            </button>
-                            <button 
-                                className={`filter-btn ${filter === 'residential' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('residential')}
-                            >
-                                Residential
-                            </button>
-                            <button 
-                                className={`filter-btn ${filter === 'commercial' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('commercial')}
-                            >
-                                Commercial
-                            </button>
-                            <button 
-                                className={`filter-btn ${filter === 'office' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('office')}
-                            >
-                                Office
-                            </button>
-                            <button 
-                                className={`filter-btn ${filter === 'cafe' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('cafe')}
-                            >
-                                Cafe & Restaurant
-                            </button>
-                            <button 
-                                className={`filter-btn ${filter === 'exterior' ? 'active' : ''}`}
-                                onClick={() => handleFilterChange('exterior')}
-                            >
-                                Exterior
-                            </button>
-                        </div>
-                        <div className="masonry-grid">
-                            {filteredProjects.map((project, index) => (
-                                <div 
-                                    key={project.id} 
-                                    className={`project-item ${sizePattern[project.id % sizePattern.length]}`}
-                                    onClick={() => handleProjectClick(project.id)}
-                                >
-                                    <img src={project.thumbnail} alt={project.title} />
-                                    <div className="project-overlay">
-                                        <div className="project-category">{project.categoryName}</div>
-                                        <div className="project-name">{project.title}</div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        <h1 className="section-title">{isInterior ? 'Interior' : 'Rendering'}</h1>
+                        <span className="section-subtitle">
+                            {isInterior ? 'Completed Projects' : '3D Visualization'}
+                        </span>
+                        <FilterBar pool={pool} filter={filter} onChange={onFilter} />
+                        <Grid items={items} onOpen={(id) => navigate('projectDetail', id)} />
                     </div>
                 </div>
             );
         }
 
-        // Project Detail Page
-        // Lightbox Component (이미지 갤러리)
+        /* ---------- 라이트박스 ---------- */
         function Lightbox({ images, currentIndex, onClose, onPrev, onNext }) {
-            const img = images[currentIndex];
-            const src = typeof img === 'string' ? img : img.src;
-            const caption = typeof img === 'object' ? img.caption : null;
+            const cur = images[currentIndex];
 
-            // 키보드 이벤트
             useEffect(() => {
-                const handleKeyDown = (e) => {
+                const onKey = (e) => {
                     if (e.key === 'Escape') onClose();
                     if (e.key === 'ArrowLeft') onPrev();
                     if (e.key === 'ArrowRight') onNext();
                 };
-                window.addEventListener('keydown', handleKeyDown);
-                return () => window.removeEventListener('keydown', handleKeyDown);
+                window.addEventListener('keydown', onKey);
+                return () => window.removeEventListener('keydown', onKey);
             }, [onClose, onPrev, onNext]);
+
+            /* 지점별로 카운터를 리셋한다 */
+            let label;
+            if (cur.si === undefined) {
+                label = images.length > 1 ? `${currentIndex + 1} / ${images.length}` : null;
+            } else {
+                const start = images.findIndex(x => x.si === cur.si);
+                const total = images.filter(x => x.si === cur.si).length;
+                label = `${cur.store} · ${currentIndex - start + 1} / ${total}`;
+            }
 
             return (
                 <div className="lightbox-overlay" onClick={onClose}>
                     <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-                        <button className="lightbox-close" onClick={onClose}>✕</button>
+                        <button className="lightbox-close" onClick={onClose} aria-label="닫기">✕</button>
                         <div className="lightbox-image-wrapper">
-                            {images.length > 1 && (
-                                <button className="lightbox-nav lightbox-prev" onClick={onPrev}>‹</button>
-                            )}
-                            <img src={src} alt="" />
-                            {images.length > 1 && (
-                                <button className="lightbox-nav lightbox-next" onClick={onNext}>›</button>
-                            )}
+                            {images.length > 1 && <button className="lightbox-nav lightbox-prev" onClick={onPrev} aria-label="이전">‹</button>}
+                            <img src={cur.src} alt="" />
+                            {images.length > 1 && <button className="lightbox-nav lightbox-next" onClick={onNext} aria-label="다음">›</button>}
                         </div>
-                        {caption && <div className="lightbox-caption">{caption}</div>}
-                        {images.length > 1 && (
-                            <div className="lightbox-counter">{currentIndex + 1} / {images.length}</div>
-                        )}
+                        {cur.caption && <div className="lightbox-caption">{cur.caption}</div>}
+                        {label && <div className="lightbox-counter">{label}</div>}
                     </div>
                 </div>
             );
         }
 
-        // 라이트박스 X버튼 닫기 플래그 (popstate 충돌 방지)
         let _closingLightboxByButton = false;
 
-        function ProjectDetail({ selectedProject, setCurrentPage }) {
+        /* ---------- 상세 ---------- */
+        function ProjectDetail({ selectedProject, navigate }) {
             const project = projectsData.find(p => p.id === selectedProject);
             const [lightboxOpen, setLightboxOpen] = useState(false);
             const [lightboxIndex, setLightboxIndex] = useState(0);
-            const lightboxOpenRef = useRef(false);
+            const openRef = useRef(false);
 
-            // lightboxOpen 상태를 ref로도 추적
-            useEffect(() => {
-                lightboxOpenRef.current = lightboxOpen;
-            }, [lightboxOpen]);
+            useEffect(() => { openRef.current = lightboxOpen; }, [lightboxOpen]);
+            useEffect(() => () => { document.body.style.overflow = ''; }, []);
 
-            // 컴포넌트 언마운트 시 overflow 복원
-            useEffect(() => {
-                return () => {
-                    document.body.style.overflow = '';
-                };
-            }, []);
-
-            // 뒤로가기로 라이트박스 닫기
             useEffect(() => {
                 const handlePop = () => {
                     if (_closingLightboxByButton) return;
-                    if (lightboxOpenRef.current) {
-                        setLightboxOpen(false);
-                        document.body.style.overflow = '';
-                    }
+                    if (openRef.current) { setLightboxOpen(false); document.body.style.overflow = ''; }
                 };
                 window.addEventListener('popstate', handlePop);
                 return () => window.removeEventListener('popstate', handlePop);
             }, []);
 
-            if (!project) {
-                return <div className="project-detail-page">Project not found</div>;
-            }
+            if (!project) return <div className="project-detail-page">Project not found</div>;
 
-            const openLightbox = (index) => {
-                setLightboxIndex(index);
+            const imgs = flatImages(project);
+            const n = project.stores ? project.stores.length : 0;
+            const period = project.firstAt && project.firstAt !== project.completedAt
+                ? fmtDate(project.firstAt) + ' — ' + fmtDate(project.completedAt)
+                : fmtDate(project.completedAt);
+            const meta = [
+                project.type === '3d' ? '3D' : 'Built',
+                project.industry
+            ].concat(n > 1 ? [n + ' Stores'] : []).concat([period]).join(' · ');
+
+            const openLightbox = (i) => {
+                setLightboxIndex(i);
                 setLightboxOpen(true);
                 document.body.style.overflow = 'hidden';
-                // 뒤로가기로 라이트박스 닫을 수 있도록 히스토리 추가
-                window.history.pushState({ lightbox: true }, '');
+                window.history.pushState({ ...(window.history.state || {}), lightbox: true }, '');
             };
-
             const closeLightbox = () => {
                 setLightboxOpen(false);
                 document.body.style.overflow = '';
-                // X버튼/오버레이 클릭 시 히스토리에서 라이트박스 상태 제거
                 if (window.history.state && window.history.state.lightbox) {
                     _closingLightboxByButton = true;
                     window.history.back();
                     setTimeout(() => { _closingLightboxByButton = false; }, 100);
                 }
             };
+            const prevImage = () => setLightboxIndex(i => (i === 0 ? imgs.length - 1 : i - 1));
+            const nextImage = () => setLightboxIndex(i => (i === imgs.length - 1 ? 0 : i + 1));
 
-            const prevImage = () => {
-                setLightboxIndex((prev) => (prev === 0 ? project.images.length - 1 : prev - 1));
+            /* 직접 진입해 돌아갈 목록이 없으면 type 으로 목록을 새로 연다 */
+            const backToList = () => {
+                const st = window.history.state && window.history.state.list;
+                if (st) window.history.back();
+                else navigate(project.type === '3d' ? 'rendering' : 'interior', null, 'all');
             };
 
-            const nextImage = () => {
-                setLightboxIndex((prev) => (prev === project.images.length - 1 ? 0 : prev + 1));
-            };
-
-            return (
-                <div className="project-detail-page">
-                    <div className="back-btn" onClick={() => setCurrentPage('projects')}>
-                        ← Back to Projects
-                    </div>
-                    <div className="project-header">
-                        <h1>{project.title}</h1>
-                        <div className="project-meta">{project.categoryName}</div>
-                    </div>
-                    <div className="detail-images-grid">
-                        {project.images.map((img, index) => {
-                            const src = typeof img === 'string' ? img : img.src;
-                            const caption = typeof img === 'object' ? img.caption : null;
+            let body;
+            if (project.stores) {
+                let offset = 0;
+                body = (
+                    <div className="stores-wrapper">
+                        {project.stores.map((st, si) => {
+                            const base = offset; offset += st.images.length;
                             return (
-                                <div key={index} className="detail-image" onClick={() => openLightbox(index)} style={{cursor: 'pointer'}}>
-                                    <img src={src} alt={`${project.title} - ${index + 1}`} />
-                                    {caption && <p className="image-caption">{caption}</p>}
+                                <div className="store-section" key={si}>
+                                    <div className="store-head">
+                                        <div className="store-name">{st.name}</div>
+                                        <div className="store-year">{fmtDate(st.completedAt)}</div>
+                                    </div>
+                                    <div className="store-grid">
+                                        {st.images.map((src, k) => (
+                                            <div className="store-photo" key={k} onClick={() => openLightbox(base + k)}>
+                                                <img src={src} alt={`${project.title} ${st.name} ${k + 1}`} loading="lazy" />
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             );
                         })}
                     </div>
+                );
+            } else {
+                body = (
+                    <div className="detail-images-grid">
+                        {imgs.map((im, i) => (
+                            <div key={i} className="detail-image" onClick={() => openLightbox(i)} style={{ cursor: 'pointer' }}>
+                                <img src={im.src} alt={`${project.title} - ${i + 1}`} loading="lazy" />
+                                {im.caption && <p className="image-caption">{im.caption}</p>}
+                            </div>
+                        ))}
+                    </div>
+                );
+            }
+
+            return (
+                <div className="project-detail-page">
+                    <div className="back-btn" onClick={backToList}>← Back</div>
+                    <div className="project-header">
+                        <h1>{project.title}</h1>
+                        <div className="project-meta">{meta}</div>
+                    </div>
+                    {body}
                     {lightboxOpen && (
-                        <Lightbox 
-                            images={project.images} 
-                            currentIndex={lightboxIndex}
-                            onClose={closeLightbox}
-                            onPrev={prevImage}
-                            onNext={nextImage}
-                        />
+                        <Lightbox images={imgs} currentIndex={lightboxIndex}
+                                  onClose={closeLightbox} onPrev={prevImage} onNext={nextImage} />
                     )}
                 </div>
             );
         }
 
-        // About Page
-        function About() {
-            return (
-                <div className="about-page">
-                    <div className="about-hero">
-                        <h1>About</h1>
-                        
-                        {/* ============================================================
-                            🔧 [수정 포인트 10] About 인트로 문구
-                            ============================================================ */}
-                        <p className="about-intro">
-                            SOHA DESIGN goes beyond creating beautiful spaces — 
-                            we embody lifestyle and brand identity through spatial experiences, 
-                            designing environments where people and space harmoniously connect.
-                        </p>
-                    </div>
-                    <div className="about-content">
-                        <div className="about-section">
-                            {/* ============================================================
-                                🔧 [수정 포인트 11] Who We Are 섹션
-                                ============================================================ */}
-                            <h2>Who We Are</h2>
-                            <p>
-                                We are a design studio specializing in commercial and retail interiors, 
-                                from cozy cafes to modern office spaces.
-                            </p>
-                            <p>
-                                With expertise in design planning, documentation, and 3D visualization, 
-                                we help you see and refine your vision before construction begins.
-                            </p>
-                        </div>
-                        <div className="about-section">
-                            {/* ============================================================
-                                🔧 [수정 포인트 12] What We Do 서비스 목록
-                                서비스를 추가/삭제/수정하려면 아래 항목을 편집하세요.
-                                ============================================================ */}
-                            <h2>What We Do</h2>
-                            <div className="services-grid">
-                                <div className="service-item">Design Planning</div>
-                                <div className="service-item">Space Layout & Documentation</div>
-                                <div className="service-item">3D Rendering & Visualization</div>
-                                <div className="service-item">Interior Perspective</div>
-                                <div className="service-item">Exterior & Bird's Eye View</div>
-                                <div className="service-item">Material & Finish Consulting</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // Footer Component
+        /* ---------- Footer ---------- */
         function Footer() {
             return (
                 <div className="footer">
@@ -1884,91 +2882,149 @@
             );
         }
 
-        // URL 해시 → 상태
+        /* ---------- About ---------- */
+        function About() {
+            return (
+                <div className="about-page">
+                    <div className="about-hero">
+                        <h1>About</h1>
+                        <p className="about-intro">
+                            SOHA DESIGN works across interior planning, visualization, and construction,
+                            with a focus on commercial spaces.
+                        </p>
+                    </div>
+                    <div className="about-content">
+                        <div className="about-section">
+                            <h2>Who We Are</h2>
+                            <p>
+                                Our experience in commercial interiors goes back to 2016 — restaurants, cafes,
+                                bars, photo studios, and offices, with occasional residential projects.
+                            </p>
+                            <p>
+                                Design planning, documentation, and 3D visualization are handled in-house.
+                                We run the site through construction, and we remain available after handover
+                                to support repairs and adjustments that may arise in day-to-day use.
+                            </p>
+                            <p>
+                                One location often leads to another for the same brand, usually through referrals.
+                            </p>
+                        </div>
+                        <div className="about-section">
+                            <h2>What We Do</h2>
+                            <div className="services-grid">
+                                <div className="service-item">Design Planning</div>
+                                <div className="service-item">Space Layout &amp; Documentation</div>
+                                <div className="service-item">3D Rendering &amp; Visualization</div>
+                                <div className="service-item">Material &amp; Finish Consulting</div>
+                                <div className="service-item">Construction &amp; Site Management</div>
+                                <div className="service-item">Post-Completion Support</div>
+                                <div className="service-item">Multi-Store Projects</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        /* ---------- 라우팅 ---------- */
         function parseHash() {
             const parts = (window.location.hash.slice(1) || '/').split('/').filter(Boolean);
-            if (parts[0] === 'about') return { page: 'about', project: null, filter: 'all' };
-            if (parts[0] === 'projects') return { page: 'projects', project: null, filter: parts[1] || 'all' };
-            if (parts[0] === 'project' && parts[1]) return { page: 'projectDetail', project: parseInt(parts[1]), filter: 'all' };
+            if (parts[0] === 'about')     return { page: 'about', project: null, filter: 'all' };
+            if (parts[0] === 'interior')  return { page: 'interior', project: null, filter: parts[1] || 'all' };
+            if (parts[0] === 'rendering') return { page: 'rendering', project: null, filter: parts[1] || 'all' };
+            if (parts[0] === 'project' && parts[1]) {
+                const id = parseInt(parts[1], 10);
+                if (projectsData.some(p => p.id === id)) return { page: 'projectDetail', project: id, filter: 'all' };
+            }
             return { page: 'home', project: null, filter: 'all' };
         }
 
-        // 상태 → URL 해시
         function stateToHash(page, project, filter) {
             if (page === 'about') return '#/about';
-            if (page === 'projects') return filter && filter !== 'all' ? `#/projects/${filter}` : '#/projects';
+            if (page === 'interior')  return filter && filter !== 'all' ? `#/interior/${filter}`  : '#/interior';
+            if (page === 'rendering') return filter && filter !== 'all' ? `#/rendering/${filter}` : '#/rendering';
             if (page === 'projectDetail' && project) return `#/project/${project}`;
             return '#/';
         }
 
-        // Main App
+        /* ---------- App ---------- */
         function App() {
             const initial = parseHash();
             const [currentPage, setCurrentPage] = useState(initial.page);
             const [selectedProject, setSelectedProject] = useState(initial.project);
             const [filter, setFilter] = useState(initial.filter);
 
-            // 현재 페이지 ref (popstate에서 페이지 변경 감지용)
-            const currentPageRef = useRef(currentPage);
-            useEffect(() => { currentPageRef.current = currentPage; }, [currentPage]);
+            const pageRef = useRef(currentPage);
+            const filterRef = useRef(filter);
+            useEffect(() => { pageRef.current = currentPage; }, [currentPage]);
+            useEffect(() => { filterRef.current = filter; }, [filter]);
 
-            // 브라우저 뒤로가기/앞으로가기 지원
             useEffect(() => {
                 const handlePopState = () => {
-                    // X버튼으로 라이트박스 닫는 중이면 무시
                     if (_closingLightboxByButton) return;
-
                     document.body.style.overflow = '';
 
                     const s = parseHash();
-                    const isPageChange = s.page !== currentPageRef.current;
-
+                    const isPageChange = s.page !== pageRef.current;
                     setCurrentPage(s.page);
                     setSelectedProject(s.project);
-                    setFilter(s.filter);
 
-                    // 실제 페이지가 변경된 경우에만 상단 스크롤
-                    if (isPageChange) {
-                        setTimeout(() => { window.scrollTo(0, 0); }, 0);
+                    /* 목록으로 돌아온 경우 저장해 둔 필터·스크롤을 복원한다 */
+                    const saved = window.history.state && window.history.state.list;
+                    if (saved && LIST_PAGES.indexOf(s.page) !== -1) {
+                        setFilter(saved.filter || s.filter);
+                        /* 목록이 다시 그려진 뒤에 복원해야 위치가 맞는다 — 몇 차례 재시도한다 */
+                        const y = saved.scrollY || 0;
+                        [0, 120, 320, 600].forEach(d => setTimeout(() => {
+                            requestAnimationFrame(() => window.scrollTo(0, y));
+                        }, d));
+                    } else {
+                        setFilter(s.filter);
+                        if (isPageChange) setTimeout(() => window.scrollTo(0, 0), 0);
                     }
                 };
-
                 window.addEventListener('popstate', handlePopState);
                 window.addEventListener('hashchange', handlePopState);
-
                 return () => {
                     window.removeEventListener('popstate', handlePopState);
                     window.removeEventListener('hashchange', handlePopState);
                 };
             }, []);
 
-            // 페이지 변경 함수 (히스토리 추가)
-            const navigateTo = (page, project = selectedProject, newFilter = filter) => {
+            const navigate = (page, project = selectedProject, newFilter = filter) => {
+                const leavingList = LIST_PAGES.indexOf(pageRef.current) !== -1;
+
+                /* 목록 → 상세로 갈 때, 떠나기 직전 목록 상태를 현재 엔트리에 기록하고 상세에도 들려 보낸다 */
+                let carry = null;
+                if (page === 'projectDetail' && leavingList) {
+                    const snap = { page: pageRef.current, filter: filterRef.current, scrollY: window.scrollY };
+                    window.history.replaceState({ list: snap }, '');
+                    carry = { list: snap };
+                }
+
                 setCurrentPage(page);
                 if (project !== selectedProject) setSelectedProject(project);
                 if (newFilter !== filter) setFilter(newFilter);
-                
-                window.history.pushState(null, '', stateToHash(page, project, newFilter));
+
+                window.history.pushState(carry, '', stateToHash(page, project, newFilter));
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
 
             let content;
             if (currentPage === 'home') {
-                content = <Home setCurrentPage={navigateTo} setSelectedProject={setSelectedProject} />;
-            } else if (currentPage === 'projects') {
-                content = <Projects setCurrentPage={navigateTo} setSelectedProject={setSelectedProject} filter={filter} setFilter={setFilter} />;
+                content = <Home navigate={navigate} />;
+            } else if (currentPage === 'interior' || currentPage === 'rendering') {
+                content = <ProjectList page={currentPage} filter={filter} setFilter={setFilter} navigate={navigate} />;
             } else if (currentPage === 'projectDetail') {
-                content = <ProjectDetail selectedProject={selectedProject} setCurrentPage={navigateTo} />;
+                content = <ProjectDetail selectedProject={selectedProject} navigate={navigate} />;
             } else if (currentPage === 'about') {
                 content = <About />;
             }
 
             return (
                 <>
-                    <Navigation currentPage={currentPage} setCurrentPage={navigateTo} setFilter={setFilter} />
-                    <main>
-                        {content}
-                    </main>
+                    <Navigation currentPage={currentPage} navigate={navigate} />
+                    <main>{content}</main>
                     <Footer />
                 </>
             );
@@ -1976,5 +3032,6 @@
 
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
+
 </body>
 </html>
