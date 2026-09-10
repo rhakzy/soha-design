@@ -1399,7 +1399,6 @@
             text-transform: uppercase;
             white-space: nowrap;
         }
-        .badge svg { width: 11px; height: 11px; flex-shrink: 0; }
         .badge-type.is-3d {
             color: var(--warm-gold);
             border: 1px solid rgba(201, 169, 97, 0.85);
@@ -2570,23 +2569,12 @@
         const LIST_PAGES = ['home', 'interior', 'rendering'];
 
         /* ---------- 배지 ---------- */
-        const StoreIcon = () => (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                 strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M3 9l1.6-5h14.8L21 9" />
-                <path d="M4.5 9v11h15V9" />
-                <path d="M9.5 20v-6h5v6" />
-            </svg>
-        );
-
         function CardBadges({ project }) {
             const n = project.stores ? project.stores.length : 0;
             return (
                 <div className="card-badges">
                     {n > 1 && (
-                        <span className="badge badge-stores" title={`${n}개 지점`}>
-                            <StoreIcon />{n}
-                        </span>
+                        <span className="badge badge-stores">{n} Stores</span>
                     )}
                     <span className={`badge badge-type ${project.type === '3d' ? 'is-3d' : 'is-built'}`}>
                         {project.type === '3d' ? '3D' : 'Built'}
