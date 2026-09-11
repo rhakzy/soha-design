@@ -888,12 +888,12 @@
         }
 
         .footer-label {
-            font-size: 0.6rem;
-            letter-spacing: 0.3em;
+            font-size: 0.85rem;
+            letter-spacing: 0.18em;
             text-transform: uppercase;
             color: var(--warm-gold);
-            margin-bottom: 1rem;
-            font-weight: 400;
+            margin-bottom: 0.7rem;
+            font-weight: 500;
         }
 
         .footer-value {
@@ -1564,6 +1564,16 @@
             outline: 3px solid var(--warm-gold);
             outline-offset: 2px;
         }
+
+        .footer-role {
+            font-size: 0.72rem;
+            font-weight: 300;
+            letter-spacing: 0.08em;
+            line-height: 1.5;
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+        .footer-item .footer-value + .footer-value { margin-top: 0.5rem; }
 
         .footer-value a, .contact-value a {
             color: inherit;
@@ -3086,21 +3096,27 @@
                         <h2>Let's Work Together</h2>
                         <div className="footer-grid">
                             {/* ============================================================
-                                🔧 [수정 포인트 13] 연락처 - 이메일
+                                🔧 [수정 포인트 13] 연락처 — 시공 담당
+                                직책 / 담당범위 / 메일 / 전화 순서입니다.
+                                전화는 화면 표기(010-…)와 tel: 링크(+8210…)가 다릅니다. 둘 다 바꿔야 합니다.
                                 ============================================================ */}
                             <div className="footer-item">
-                                <div className="footer-label">Email</div>
-                                <div className="footer-value"><a href="mailto:dahee2769@naver.com">dahee2769@naver.com</a></div>
+                                <div className="footer-label">Construction Director</div>
+                                <div className="footer-role">Construction &amp; Project Management</div>
+                                <div className="footer-value"><a href="mailto:ino87x@naver.com">ino87x@naver.com</a></div>
+                                <div className="footer-value"><a href="tel:+821073630280">010-7363-0280</a></div>
                             </div>
-                            
+
                             {/* ============================================================
-                                🔧 [수정 포인트 14] 연락처 - 전화번호
+                                🔧 [수정 포인트 14] 연락처 — 설계 담당
                                 ============================================================ */}
                             <div className="footer-item">
-                                <div className="footer-label">Phone</div>
-                                <div className="footer-value"><a href="tel:+821022712769">+82 10-2271-2769</a></div>
+                                <div className="footer-label">Design Director</div>
+                                <div className="footer-role">Design &amp; Documentation</div>
+                                <div className="footer-value"><a href="mailto:dahee2769@naver.com">dahee2769@naver.com</a></div>
+                                <div className="footer-value"><a href="tel:+821022712769">010-2271-2769</a></div>
                             </div>
-                            
+
                             {/* ============================================================
                                 🔧 [수정 포인트 15] 연락처 - 위치
                                 ============================================================ */}
