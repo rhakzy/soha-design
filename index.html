@@ -2572,7 +2572,36 @@
                                                         ]
                                             }
                                 ]
-                    }
+                    },
+            {
+                    "id": 26,
+                    "type": "built",
+                    "category": "residential",
+                    "industry": "APARTMENT",
+                    "brandId": "ipark-howon",
+                    "title": "호원동 아이파크 34평",
+                    "completedAt": "2026",
+                    "firstAt": "2026",
+                    "thumbnail": "images/built/2026/ipark_1.webp",
+                    "images": [
+                                {
+                                            "src": "images/built/2026/ipark_1.webp",
+                                            "caption": "Living Room"
+                                },
+                                {
+                                            "src": "images/built/2026/ipark_2.webp",
+                                            "caption": "Bedroom"
+                                },
+                                {
+                                            "src": "images/built/2026/ipark_3.webp",
+                                            "caption": "Bathroom"
+                                },
+                                {
+                                            "src": "images/built/2026/ipark_4.webp",
+                                            "caption": "Bathroom"
+                                }
+                    ]
+        }
         ];
 
         /* stores 가 있으면 기간을 지점들에서 다시 계산한다.
@@ -3032,7 +3061,7 @@
 
             return (
                 <div className="project-detail-page">
-                    <button type="button" className="back-btn" onClick={backToList}>← Back</button>
+                    <button type="button" className="back-btn" onClick={backToList}>Back</button>
                     <div className="project-header">
                         <div className="project-title-row">
                             <h1>{project.title}</h1>
